@@ -1,6 +1,6 @@
 /*
  * SimpleRegionMarket
- * Copyright (C) 2014  theZorro266 <http://www.thezorro266.com>
+ * Copyright (C) 2013  theZorro266 <http://www.thezorro266.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,14 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.thezorro266.bukkit.srm.templates.interfaces;
+package com.thezorro266.bukkit.srm.exceptions;
 
-import org.bukkit.entity.Player;
-import com.thezorro266.bukkit.srm.factories.RegionFactory;
+/**
+ * An exception for a wrong template format.
+ * 
+ * @author theZorro266
+ */
+public class TemplateFormatException extends Exception {
+	private static final long serialVersionUID = 54537656279632141L;
 
-public interface TimedTemplate {
+	public TemplateFormatException(String message) {
+		super(message);
+	}
 
-	public boolean cancel(RegionFactory.Region region, Player player);
+	public TemplateFormatException(Throwable cause) {
+		super(cause);
+	}
 
-	public void schedule();
+	public TemplateFormatException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

@@ -1,6 +1,6 @@
 /*
  * SimpleRegionMarket
- * Copyright (C) 2014  theZorro266 <http://www.thezorro266.com>
+ * Copyright (C) 2013  theZorro266 <http://www.thezorro266.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,14 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.thezorro266.bukkit.srm.templates.interfaces;
+package com.thezorro266.bukkit.srm.exceptions;
 
-import org.bukkit.entity.Player;
-import com.thezorro266.bukkit.srm.factories.RegionFactory;
+public class ContentLoadException extends Exception {
 
-public interface TimedTemplate {
+	private static final long serialVersionUID = 7261993650328186824L;
 
-	public boolean cancel(RegionFactory.Region region, Player player);
+	public ContentLoadException(String message) {
+		super(message);
+	}
 
-	public void schedule();
+	public ContentLoadException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

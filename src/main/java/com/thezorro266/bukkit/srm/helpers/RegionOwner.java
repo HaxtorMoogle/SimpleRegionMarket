@@ -16,14 +16,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.thezorro266.bukkit.srm.templates.interfaces;
+package com.thezorro266.bukkit.srm.helpers;
 
-import org.bukkit.entity.Player;
 import com.thezorro266.bukkit.srm.factories.RegionFactory;
+import org.bukkit.entity.Player;
 
-public interface TimedTemplate {
+import java.lang.ref.WeakReference;
 
-	public boolean cancel(RegionFactory.Region region, Player player);
+public class RegionOwner {
+	private WeakReference<Player> player;
+	private WeakReference<RegionFactory.Region> region;
 
-	public void schedule();
+	public RegionOwner(Player player, RegionFactory.Region region) {
+		this.player = new WeakReference<Player>(player);
+		this.region = new WeakReference<RegionFactory.Region>(region);
+	}
+
+	public Player getPlayer() {
+		return player.get();
+	}
+	
+	public RegionFactory.Region getRegion() {
+		return region.get();
+	}
 }

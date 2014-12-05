@@ -1,453 +1,142 @@
-/**
+/*
  * SimpleRegionMarket
- * Copyright (C) 2013  theZorro266 <http://www.thezorro266.com>
- * 
+ * Copyright (C) 2014  theZorro266 <http://www.thezorro266.com>
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.thezorro266.bukkit.srm;
 
-import java.util.ArrayList;
-
-import org.bukkit.Bukkit;
+import com.thezorro266.bukkit.srm.exceptions.NotEnoughPermissionsException;
+import com.thezorro266.bukkit.srm.factories.RegionFactory.Region;
+import com.thezorro266.bukkit.srm.hooks.Permissions;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.thezorro266.bukkit.srm.helpers.Permission;
-import com.thezorro266.bukkit.srm.templates.Template;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.logging.Logger;
 
 public class CommandHandler implements CommandExecutor {
+	private Logger logger;
+	private Permissions permissions;
+
+	public CommandHandler() {
+		this.logger = SimpleRegionMarket.getInstance().getLogger();
+		this.permissions = SimpleRegionMarket.getInstance().getPermissions();
+	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		Player player = null;
-		Boolean isConsole = true;
-		if (sender instanceof Player) {
-			player = (Player) sender;
-			isConsole = false;
+		if (args.length == 0) {
+			try {
+				command("", sender, new String[]{});
+			} catch (NotEnoughPermissionsException e) {
+				sender.sendMessage(ChatColor.RED + MessageFormat.format(LanguageSupport.instance.getString("not.enough.permissions.message"), e.getPermNode()));
+			}
 		}
 
-		if (args.length < 1) {
-			return false;
-		}
+		String[] realArguments = new String[args.length - 1];
+		System.arraycopy(args, 1, realArguments, 0, args.length - 1);
 
-		if (args[0].equalsIgnoreCase("version") || args[0].equalsIgnoreCase("v")) {
-			sender.sendMessage(String.format(ChatColor.YELLOW + "Loaded version %s, %s", SimpleRegionMarket.getInstance().getDescription().getVersion(),
-					SimpleRegionMarket.getCopyright()));
-		} else if (args[0].equalsIgnoreCase("release")) {
-			if (SimpleRegionMarket.getInstance().getVaultHook().hasPermission(player, Permission.COMMAND_RELEASE)) {
-				if (args.length < 2) {
-					sender.sendMessage("Usage: /rm release <region> (<world>) - Removes the owners and members from the region");
-					return true;
-				} else {
-					final String region = args[1];
-					String world;
-					if (args.length > 2) {
-						world = args[2];
-					} else {
-						if (isConsole) {
-							sender.sendMessage("You have to type the world in the console");
-							return true;
-						} else {
-							world = player.getWorld().getName();
-						}
-					}
-					Boolean found = false;
-					for (Template template : SimpleRegionMarket.getInstance().getTemplateManager().getTemplateList()) {
-						/*
-						if (Utils.getEntry(token, world, region, "taken") != null) {
-							if (Utils.getEntryBoolean(token, world, region, "taken")) {
-								token.releaseRegion(world, region);
-								found = true;
-								break;
-							}
-						}
-						*/
-					}
-
-					if (found) {
-						sender.sendMessage(String.format("Region %s in world %s has been released.", region, world));
-					} else {
-						sender.sendMessage(String.format("Region %s was not found in world %s.", region, world));
-					}
-				}
+		try {
+			command(args[0], sender, realArguments);
+		} catch (IllegalArgumentException e) {
+			if (e.getMessage().isEmpty()) {
+				return false;
 			} else {
-				sender.sendMessage("You do not have permission to do this.");
+				sender.sendMessage(ChatColor.RED + e.getMessage());
 			}
-		} else if (args[0].equalsIgnoreCase("remove")) {
-			if (SimpleRegionMarket.getInstance().getVaultHook().hasPermission(player, Permission.COMMAND_REMOVE)) {
-				if (args.length < 2) {
-					sender.sendMessage("Usage: /rm remove <region> (<world>) - Removes the region out of the system");
-					return true;
-				} else {
-					final String region = args[1];
-					String world;
-					if (args.length > 2) {
-						world = args[2];
-					} else {
-						if (isConsole) {
-							sender.sendMessage("You have to type the world in the console");
-							return true;
-						} else {
-							world = player.getWorld().getName();
-						}
-					}
-					Boolean found = false;
-					for (Template template : SimpleRegionMarket.getInstance().getTemplateManager().getTemplateList()) {
-						/*
-						if (Utils.getEntry(token, world, region, "taken") != null) {
-							if (Utils.getEntryBoolean(token, world, region, "taken")) {
-								token.releaseRegion(world, region);
-								Utils.removeRegion(token, world, region);
-								found = true;
-								break;
-							}
-						}
-						*/
-					}
-
-					if (found) {
-						sender.sendMessage(String.format("Region %s in world %s has been removed.", region, world));
-					} else {
-						sender.sendMessage(String.format("Region %s was not found in world %s.", region, world));
-					}
-				}
-			} else {
-				sender.sendMessage("You do not have permission to do this.");
-			}
-		} else if (args[0].equalsIgnoreCase("list")) { // TODO Can list own and rented regions
-			if (SimpleRegionMarket.getInstance().getVaultHook().hasPermission(player, Permission.COMMAND_LIST)) {
-				sender.sendMessage("Not yet implemented");
-			} else {
-				sender.sendMessage("You do not have permission to do this.");
-			}
-		} else if (args[0].equalsIgnoreCase("addmember")) {
-			if (SimpleRegionMarket.getInstance().getVaultHook().hasPermission(player, Permission.COMMAND_ADDMEMBER_OWN)
-					|| SimpleRegionMarket.getInstance().getVaultHook().hasPermission(player, Permission.COMMAND_ADDMEMBER_OTHER)) {
-				if (args.length < 3) {
-					sender.sendMessage("Usage: /rm addmember <player> <region> (<world>) - Adds the player as a member to the region");
-				} else {
-					final Player givenPlayer = Bukkit.getPlayer(args[1]);
-					if (givenPlayer == null) {
-						sender.sendMessage("The given player was not found.");
-						return true;
-					}
-					final String region = args[2];
-					String world;
-					if (args.length > 3) {
-						world = args[3];
-					} else {
-						if (isConsole) {
-							sender.sendMessage("You have to type the world in the console");
-							return true;
-						} else {
-							world = player.getWorld().getName();
-						}
-					}
-					final World worldWorld = Bukkit.getWorld(world);
-					if (worldWorld == null) {
-						sender.sendMessage("The given world was not found.");
-						return true;
-					}
-					final ProtectedRegion protectedRegion = SimpleRegionMarket.getInstance().getWorldGuardManager().getProtectedRegion(worldWorld, region);
-					if (protectedRegion == null) {
-						final ArrayList<String> list = new ArrayList<String>();
-						list.add(region);
-						list.add(world);
-						sender.sendMessage(String.format("Region %s was not found in world %s.", region, world));
-						return true;
-					}
-
-					Boolean found = false;
-					for (Template template : SimpleRegionMarket.getInstance().getTemplateManager().getTemplateList()) {
-						/*
-						if (Utils.getEntry(token, world, region, "taken") != null) {
-							if (Utils.getEntryBoolean(token, world, region, "taken")) {
-								if (token.canAddMember()) {
-									if (isConsole || SimpleRegionMarket.permManager.canPlayerAddMember(player, token)
-											|| SimpleRegionMarket.permManager.isAdmin(player)) { // Permission
-										if (isConsole || Utils.getEntryString(token, world, region, "owner").equalsIgnoreCase(player.getName())
-												|| SimpleRegionMarket.permManager.isAdmin(player)) {
-											SimpleRegionMarket.wgManager.addMember(protectedRegion, givenPlayer);
-											found = true;
-											break;
-										} else {
-											langHandler.playerErrorOut(player, "PLAYER.ERROR.NOT_OWNER", null);
-										}
-									} else {
-										langHandler.playerErrorOut(player, "PLAYER.NO_PERMISSIONS.ADDMEMBER", null);
-									}
-								} else {
-									if (isConsole) {
-										langHandler.consoleOut("CMD.ADDMEMBER.NO_ADDMEMBER", Level.SEVERE, null);
-									} else {
-										langHandler.playerErrorOut(player, "CMD.ADDMEMEBR.NO_ADDMEMBER", null);
-									}
-								}
-							}
-						}
-						*/
-					}
-
-					if (found) {
-						sender.sendMessage(String.format("Added %s to the region %s in world %s as member.", givenPlayer.getName(), region, world));
-					} else {
-						sender.sendMessage(String.format("Region %s was not found in world %s.", region, world));
-					}
-				}
-			} else {
-				sender.sendMessage("You do not have permission to do this.");
-			}
-		} else if (args[0].equalsIgnoreCase("remmember") || args[0].equalsIgnoreCase("removemember")) {
-			if (SimpleRegionMarket.getInstance().getVaultHook().hasPermission(player, Permission.COMMAND_ADDMEMBER_OWN)
-					|| SimpleRegionMarket.getInstance().getVaultHook().hasPermission(player, Permission.COMMAND_ADDMEMBER_OTHER)) {
-				if (args.length < 3) {
-					sender.sendMessage("Usage: /rm removemember <player> <region> (<world>) - Removes the member from the region");
-				} else {
-					final Player givenPlayer = Bukkit.getPlayer(args[1]);
-					if (givenPlayer == null) {
-						sender.sendMessage("The given player was not found.");
-						return true;
-					}
-					final String region = args[2];
-					String world;
-					if (args.length > 3) {
-						world = args[3];
-					} else {
-						if (isConsole) {
-							sender.sendMessage("You have to type the world in the console");
-							return true;
-						} else {
-							world = player.getWorld().getName();
-						}
-					}
-					final World worldWorld = Bukkit.getWorld(world);
-					if (worldWorld == null) {
-						sender.sendMessage("The given world was not found.");
-						return true;
-					}
-					final ProtectedRegion protectedRegion = SimpleRegionMarket.getInstance().getWorldGuardManager().getProtectedRegion(worldWorld, region);
-					if (protectedRegion == null) {
-						final ArrayList<String> list = new ArrayList<String>();
-						list.add(region);
-						list.add(world);
-						sender.sendMessage(String.format("Region %s was not found in world %s.", region, world));
-						return true;
-					}
-
-					Boolean found = false;
-					for (Template template : SimpleRegionMarket.getInstance().getTemplateManager().getTemplateList()) {
-						/*
-						if (Utils.getEntry(token, world, region, "taken") != null) {
-							if (Utils.getEntryBoolean(token, world, region, "taken")) {
-								if (token.canAddMember()) {
-									if (isConsole || SimpleRegionMarket.permManager.canPlayerAddMember(player, token)
-											|| SimpleRegionMarket.permManager.isAdmin(player)) {
-										if (isConsole || Utils.getEntryString(token, world, region, "owner").equalsIgnoreCase(player.getName())
-												|| SimpleRegionMarket.permManager.isAdmin(player)) {
-											SimpleRegionMarket.wgManager.removeMember(protectedRegion, givenPlayer);
-											found = true;
-											break;
-										} else {
-											langHandler.playerErrorOut(player, "PLAYER.ERROR.NOT_OWNER", null);
-										}
-									} else {
-										langHandler.playerErrorOut(player, "PLAYER.NO_PERMISSIONS.ADDMEMBER", null);
-									}
-								} else {
-									if (isConsole) {
-										langHandler.consoleOut("CMD.ADDMEMBER.NO_ADDMEMBER", Level.SEVERE, null);
-									} else {
-										langHandler.playerErrorOut(player, "CMD.ADDMEMEBR.NO_ADDMEMBER", null);
-									}
-								}
-							}
-						}
-						*/
-					}
-
-					if (found) {
-						sender.sendMessage(String.format("Removed the member %s from the region %s in world %s.", givenPlayer.getName(), region, world));
-					} else {
-						sender.sendMessage(String.format("Region %s was not found in world %s.", region, world));
-					}
-				}
-			} else {
-				sender.sendMessage("You do not have permission to do this.");
-			}
-		} else if (args[0].equalsIgnoreCase("addowner")) {
-			if (SimpleRegionMarket.getInstance().getVaultHook().hasPermission(player, Permission.COMMAND_ADDOWNER_OWN)
-					|| SimpleRegionMarket.getInstance().getVaultHook().hasPermission(player, Permission.COMMAND_ADDOWNER_OTHER)) {
-				if (args.length < 3) {
-					sender.sendMessage("Usage: /rm addowner <player> <region> (<world>) - Adds the player as an owner to the region");
-				} else {
-					final Player givenPlayer = Bukkit.getPlayer(args[1]);
-					if (givenPlayer == null) {
-						sender.sendMessage("The given player was not found.");
-						return true;
-					}
-					final String region = args[2];
-					String world;
-					if (args.length > 3) {
-						world = args[3];
-					} else {
-						if (isConsole) {
-							sender.sendMessage("You have to type the world in the console");
-							return true;
-						} else {
-							world = player.getWorld().getName();
-						}
-					}
-					final World worldWorld = Bukkit.getWorld(world);
-					if (worldWorld == null) {
-						sender.sendMessage("The given world was not found.");
-						return true;
-					}
-					final ProtectedRegion protectedRegion = SimpleRegionMarket.getInstance().getWorldGuardManager().getProtectedRegion(worldWorld, region);
-					if (protectedRegion == null) {
-						final ArrayList<String> list = new ArrayList<String>();
-						list.add(region);
-						list.add(world);
-						sender.sendMessage(String.format("Region %s was not found in world %s.", region, world));
-						return true;
-					}
-
-					Boolean found = false;
-					for (Template template : SimpleRegionMarket.getInstance().getTemplateManager().getTemplateList()) {
-						/*
-						if (Utils.getEntry(token, world, region, "taken") != null) {
-							if (Utils.getEntryBoolean(token, world, region, "taken")) {
-								if (token.canAddOwner()) {
-									if (isConsole || SimpleRegionMarket.permManager.canPlayerAddOwner(player, token)
-											|| SimpleRegionMarket.permManager.isAdmin(player)) {
-										if (isConsole || Utils.getEntryString(token, world, region, "owner").equalsIgnoreCase(player.getName())
-												|| SimpleRegionMarket.permManager.isAdmin(player)) {
-											SimpleRegionMarket.wgManager.addOwner(protectedRegion, givenPlayer);
-											found = true;
-											break;
-										} else {
-											langHandler.playerErrorOut(player, "PLAYER.ERROR.NOT_OWNER", null);
-										}
-									} else {
-										langHandler.playerErrorOut(player, "PLAYER.NO_PERMISSIONS.ADDOWNER", null);
-									}
-								} else {
-									if (isConsole) {
-										langHandler.consoleOut("CMD.ADDOWNER.NO_ADDOWNER", Level.SEVERE, null);
-									} else {
-										langHandler.playerErrorOut(player, "CMD.ADDOWNER.NO_ADDOWNER", null);
-									}
-								}
-							}
-						}
-						*/
-					}
-
-					if (found) {
-						sender.sendMessage(String.format("Added %s to the region %s in world %s as owner.", givenPlayer.getName(), region, world));
-					} else {
-						sender.sendMessage(String.format("Region %s was not found in world %s.", region, world));
-					}
-				}
-			} else {
-				sender.sendMessage("You do not have permission to do this.");
-			}
-		} else if (args[0].equalsIgnoreCase("remowner") || args[0].equalsIgnoreCase("removeowner")) {
-			if (SimpleRegionMarket.getInstance().getVaultHook().hasPermission(player, Permission.COMMAND_ADDOWNER_OWN)
-					|| SimpleRegionMarket.getInstance().getVaultHook().hasPermission(player, Permission.COMMAND_ADDOWNER_OTHER)) {
-				if (args.length < 3) {
-					sender.sendMessage("Usage: /rm removeowner <player> <region> (<world>) - Removes the owner from the region");
-				} else {
-					final Player givenPlayer = Bukkit.getPlayer(args[1]);
-					if (givenPlayer == null) {
-						sender.sendMessage("The given player was not found.");
-						return true;
-					}
-					final String region = args[2];
-					String world;
-					if (args.length > 3) {
-						world = args[3];
-					} else {
-						if (isConsole) {
-							sender.sendMessage("You have to type the world in the console");
-							return true;
-						} else {
-							world = player.getWorld().getName();
-						}
-					}
-					final World worldWorld = Bukkit.getWorld(world);
-					if (worldWorld == null) {
-						sender.sendMessage("The given world was not found.");
-						return true;
-					}
-					final ProtectedRegion protectedRegion = SimpleRegionMarket.getInstance().getWorldGuardManager().getProtectedRegion(worldWorld, region);
-					if (protectedRegion == null) {
-						final ArrayList<String> list = new ArrayList<String>();
-						list.add(region);
-						list.add(world);
-						sender.sendMessage(String.format("Region %s was not found in world %s.", region, world));
-						return true;
-					}
-
-					Boolean found = false;
-					for (Template template : SimpleRegionMarket.getInstance().getTemplateManager().getTemplateList()) {
-						/*
-						if (Utils.getEntry(token, world, region, "taken") != null) {
-							if (Utils.getEntryBoolean(token, world, region, "taken")) {
-								if (token.canAddOwner()) {
-									if (isConsole || SimpleRegionMarket.permManager.canPlayerAddOwner(player, token)
-											|| SimpleRegionMarket.permManager.isAdmin(player)) {
-										if (isConsole || Utils.getEntryString(token, world, region, "owner").equalsIgnoreCase(player.getName())
-												|| SimpleRegionMarket.permManager.isAdmin(player)) {
-											SimpleRegionMarket.wgManager.removeOwner(protectedRegion, givenPlayer);
-											found = true;
-											break;
-										} else {
-											langHandler.playerErrorOut(player, "PLAYER.ERROR.NOT_OWNER", null);
-										}
-									} else {
-										langHandler.playerErrorOut(player, "PLAYER.NO_PERMISSIONS.ADDOWNER", null);
-									}
-								} else {
-									if (isConsole) {
-										langHandler.consoleOut("CMD.ADDOWNER.NO_ADDOWNER", Level.SEVERE, null);
-									} else {
-										langHandler.playerErrorOut(player, "CMD.ADDOWNER.NO_ADDOWNER", null);
-									}
-								}
-							}
-						}
-						*/
-					}
-
-					if (found) {
-						sender.sendMessage(String.format("Added %s to the region %s in world %s as owner.", givenPlayer.getName(), region, world));
-					} else {
-						sender.sendMessage(String.format("Region %s was not found in world %s.", region, world));
-					}
-				}
-			} else {
-				sender.sendMessage("You do not have permission to do this.");
-			}
-		} else {
-			return false;
+		} catch (NotEnoughPermissionsException e) {
+			sender.sendMessage(ChatColor.RED + MessageFormat.format(LanguageSupport.instance.getString("not.enough.permissions.message"), e.getPermNode()));
 		}
 		return true;
+	}
+
+	public void command(String cmd, CommandSender sender, String[] arguments) throws NotEnoughPermissionsException {
+		Player player = (sender instanceof Player ? (Player) sender : null);
+
+		if (cmd.isEmpty() || cmd.equalsIgnoreCase("help") || cmd.equals("?")) {
+			permissions.checkPermission(sender, "srm.help");
+			sender.sendMessage("No help for you!");
+
+		} else if (cmd.equalsIgnoreCase("version") || cmd.equalsIgnoreCase("v")) {
+			permissions.checkPermission(sender, "srm.version");
+			String versionString = MessageFormat.format(LanguageSupport.instance.getString("command.version"), SimpleRegionMarket.getInstance().getDescription().getVersion());
+			String copyrightString = SimpleRegionMarket.getCopyright();
+			sender.sendMessage(ChatColor.YELLOW + String.format("%s, %s", versionString, copyrightString)); //NON-NLS
+		} else if (cmd.equalsIgnoreCase("language") || cmd.equalsIgnoreCase("lang")) {
+			permissions.checkPermission(sender, "srm.admin.language");
+
+		} else if (cmd.equalsIgnoreCase("reload")) {
+			permissions.checkPermission(sender, "srm.admin.reload");
+
+		} else if (cmd.equalsIgnoreCase("info")) {
+			permissions.checkPermission(sender, "srm.t.template.info");
+
+		} else if (cmd.equalsIgnoreCase("tp")) {
+			permissions.checkPermission(sender, "srm.t.template.tp");
+
+		} else if (cmd.equalsIgnoreCase("list")) {
+			permissions.checkPermission(sender, "srm.t.template.list");
+
+		} else if (cmd.equalsIgnoreCase("region")) {
+			Region region = null;
+			if (player != null) {
+				ArrayList<Region> playerRegions = SimpleRegionMarket.getInstance().getPlayerManager().getPlayerRegions((Player) sender);
+
+				if (playerRegions.size() == 1) {
+					region = playerRegions.get(0);
+				}
+			}
+
+			String[] regionArguments = null;
+
+			String regionString = "";
+			if (region == null) {
+				if (arguments.length > 2) {
+					regionString = arguments[1];
+					region = SimpleRegionMarket.getInstance().getWorldHelper().getRegion(regionString, null);
+					if (region == null && player != null) {
+						region = SimpleRegionMarket.getInstance().getWorldHelper().getRegion(regionString, player.getWorld());
+					}
+					if (region != null) {
+						regionArguments = new String[arguments.length - 2];
+						System.arraycopy(arguments, 2, regionArguments, 0, arguments.length - 2);
+					}
+				}
+			}
+
+			if (region != null) {
+				if (regionArguments == null) {
+					regionArguments = new String[arguments.length - 1];
+					System.arraycopy(arguments, 1, regionArguments, 0, arguments.length - 1);
+				}
+
+				region.getTemplate().regionCommand(region, arguments[0], sender, regionArguments);
+			} else {
+				if (regionString.isEmpty()) {
+					throw new IllegalArgumentException(LanguageSupport.instance.getString("region.specify"));
+				} else {
+					throw new IllegalArgumentException(MessageFormat.format(LanguageSupport.instance.getString("region.not.found"), regionString));
+				}
+			}
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
 }

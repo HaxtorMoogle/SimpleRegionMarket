@@ -16,14 +16,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.thezorro266.bukkit.srm.templates.interfaces;
+package com.thezorro266.bukkit.srm.hooks;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import com.thezorro266.bukkit.srm.factories.RegionFactory;
 
-public interface TimedTemplate {
+import java.util.ArrayList;
 
-	public boolean cancel(RegionFactory.Region region, Player player);
+public class BasicPermissions extends Permissions {
+	public BasicPermissions() {
+		enabled = true;
+	}
 
-	public void schedule();
+	@Override
+	public boolean hasPermission(CommandSender sender, String node) {
+		return isEnabled() ? sender.hasPermission(node) : sender.isOp();
+	}
+
+	@Override
+	public boolean hasPermission(Player player, String node) {
+		return isEnabled() ? player.hasPermission(node) : player.isOp();
+	}
+
+	@Override
+	public boolean hasPermissionListSupport() {
+		return false;
+	}
+
+	@Override
+	public ArrayList<String> getPermissionList(Player player) {
+		return null;
+	}
 }
