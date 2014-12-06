@@ -36,7 +36,7 @@ import com.thezorro266.bukkit.srm.helpers.Options;
 public class SignFactory
 {
     public static final SignFactory instance = new SignFactory();
-    @Getter
+
     private int signCount = 0;
 
     private SignFactory()
@@ -166,6 +166,12 @@ public class SignFactory
             options = new Options();
         }
 
+        public ConfigurationSection getOptions()
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
         public void clear()
         {
             setContent(new String[SIGN_LINE_COUNT]);
@@ -218,7 +224,7 @@ public class SignFactory
             }
         }
 
-        @SuppressWarnings("HardCodedStringLiteral")
+
         @Override
         public String toString()
         {
@@ -226,6 +232,12 @@ public class SignFactory
         }
 
         public Location getLocation()
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public Object getRegion()
         {
             // TODO Auto-generated method stub
             return null;

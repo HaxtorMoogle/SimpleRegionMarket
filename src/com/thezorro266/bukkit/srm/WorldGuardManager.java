@@ -20,6 +20,7 @@ package com.thezorro266.bukkit.srm;
 
 import java.lang.ref.WeakReference;
 import java.util.Set;
+import java.util.UUID;
 import java.util.WeakHashMap;
 
 import org.bukkit.Bukkit;
@@ -35,7 +36,6 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
-import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.thezorro266.bukkit.srm.factories.RegionFactory;
 
@@ -334,13 +334,29 @@ public class WorldGuardManager
         {
             if (player.isOnline())
             {
-                return SimpleRegionMarket.getPlugin().getWorldGuardManager().getWorldGuard().hasPermission(player.getPlayer(), perm);
+                try
+                {
+                    return SimpleRegionMarket.getPlugin().getWorldGuardManager().getWorldGuard().hasPermission(player.getPlayer(), perm);
+                }
+                catch (MoogleGenericException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                    return false;
+                }
             }
             else
             {
                 SimpleRegionMarket.getPlugin().getLogger().warning(LanguageSupport.instance.getString("worldguard.offlineplayer.getpermission"));
                 return true;
             }
+        }
+
+        @Override
+        public UUID getUniqueId()
+        {
+            // TODO Auto-generated method stub
+            return null;
         }
 
     }

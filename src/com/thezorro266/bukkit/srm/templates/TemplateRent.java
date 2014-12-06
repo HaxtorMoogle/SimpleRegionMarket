@@ -34,9 +34,9 @@ import java.text.MessageFormat;
 
 public class TemplateRent extends TemplateLease
 {
-    public TemplateRent(ConfigurationSection templateConfigSection)
+    public TemplateRent(ConfigurationSection templateConfigSection, SimpleRegionMarket plugin)
     {
-        super(templateConfigSection);
+        super(templateConfigSection, plugin);
         type = "rent";
     }
 

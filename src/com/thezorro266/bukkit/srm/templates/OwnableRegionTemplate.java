@@ -50,7 +50,7 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
     @Override
     public boolean isRegionOwner(OfflinePlayer player, RegionFactory.Region region)
     {
-       return worldGuardManager.getOwnable(region).isPlayerOwner(wgm.wrapPlayer(player));
+       return worldGuardManager.getOwnable(region).isPlayerOwner(worldGuardManager.wrapPlayer(player));
     }
 
     @Override
@@ -122,7 +122,7 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
     {
         WorldGuardManager.WorldGuardOwnable wgo = worldGuardManager.getOwnable(region);
 
-        wgo.addOwner(wgm.wrapPlayer(player));
+        wgo.addOwner(worldGuardManager.wrapPlayer(player));
 
         try
         {
@@ -140,7 +140,7 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
     {
         WorldGuardManager.WorldGuardOwnable wgo = worldGuardManager.getOwnable(region);
 
-        wgo.addMember(wgm.wrapPlayer(player));
+        wgo.addMember(worldGuardManager.wrapPlayer(player));
 
         try
         {
@@ -158,7 +158,7 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
     {
         WorldGuardManager.WorldGuardOwnable wgo =worldGuardManager.getOwnable(region);
 
-        wgo.removeOwner(wgm.wrapPlayer(player));
+        wgo.removeOwner(worldGuardManager.wrapPlayer(player));
 
         try
         {
@@ -176,7 +176,7 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
     {
         WorldGuardManager.WorldGuardOwnable wgo = worldGuardManager.getOwnable(region);
 
-        wgo.removeMember(wgm.wrapPlayer(player));
+        wgo.removeMember(worldGuardManager.wrapPlayer(player));
 
         try
         {

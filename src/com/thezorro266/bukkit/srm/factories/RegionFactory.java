@@ -22,13 +22,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
+
 import lombok.Getter;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
+
+import com.moogle.MoogleGenericException;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
@@ -54,25 +58,36 @@ public class RegionFactory
     public static ProtectedRegion getProtectedRegionFromLocation(Location loc, String region)
     {
         ProtectedRegion protectedRegion = null;
-        final RegionManager worldRegionManager = SimpleRegionMarket.getInstance().getWorldGuardManager().getWorldGuard().getRegionManager(loc.getWorld());
-        if (region == null)
+        RegionManager worldRegionManager;
+        try
         {
-            ApplicableRegionSet regionSet = worldRegionManager.getApplicableRegions(loc.getBukkitLocation());
-            if (regionSet.size() == 1)
+            worldRegionManager = SimpleRegionMarket.getInstance().getWorldGuardManager().getWorldGuard().getRegionManager(loc.getWorld());
+            if (region == null)
             {
-                protectedRegion = regionSet.iterator().next();
+                ApplicableRegionSet regionSet = worldRegionManager.getApplicableRegions(loc.getBukkitLocation());
+                if (regionSet.size() == 1)
+                {
+                    protectedRegion = regionSet.iterator().next();
+                }
+                else
+                {
+                    System.out.println("More than one region detected at " + loc.toString());
+                    // TODO Take child region or region with highest priority
+                }
             }
             else
             {
-                System.out.println("More than one region detected at " + loc.toString());
-                // TODO Take child region or region with highest priority
+                protectedRegion = worldRegionManager.getRegion(region);
             }
+            return protectedRegion;
         }
-        else
+        catch (MoogleGenericException e)
         {
-            protectedRegion = worldRegionManager.getRegion(region);
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         return protectedRegion;
+       
     }
 
     public Region createRegion(Template template, World world, ProtectedRegion worldguardRegion)
@@ -159,16 +174,16 @@ public class RegionFactory
 
     public class Region
     {
-        @Getter
+       
         final Template template;
-        @Getter
+        
         final World world;
-        @Getter
+        
         final ProtectedRegion worldguardRegion;
-        @Getter
+        
         ArrayList<Sign> signList;
 
-        @Getter
+        
         private final Options options;
 
         private Region(Template template, World world, ProtectedRegion worldguardRegion)
@@ -191,6 +206,18 @@ public class RegionFactory
             this.worldguardRegion = worldguardRegion;
             signList = new ArrayList<Sign>();
             options = new Options();
+        }
+
+        public ApplicableRegionSet getSignList()
+        {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public ConfigurationSection getOptions()
+        {
+            // TODO Auto-generated method stub
+            return null;
         }
 
         public String getName()
@@ -268,6 +295,18 @@ public class RegionFactory
         public String toString()
         {
             return String.format("Region[%s,w:%s,t:%s]", getName(), world.getName(), template.toString());
+        }
+
+        public Object getTemplate()
+        {
+            // TODO Auto-generated method stub
+            return template;
+        }
+
+        public ProtectedCuboidRegion getWorldguardRegion()
+        {
+            // TODO Auto-generated method stub
+            return (ProtectedCuboidRegion) worldguardRegion;
         }
     }
 }

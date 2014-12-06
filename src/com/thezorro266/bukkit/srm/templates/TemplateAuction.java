@@ -20,14 +20,16 @@ package com.thezorro266.bukkit.srm.templates;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+
+import com.thezorro266.bukkit.srm.SimpleRegionMarket;
 import com.thezorro266.bukkit.srm.factories.RegionFactory;
 import com.thezorro266.bukkit.srm.templates.interfaces.TimedTemplate;
 
 public class TemplateAuction extends TemplateSell implements TimedTemplate
 {
-    public TemplateAuction(ConfigurationSection templateConfigSection)
+    public TemplateAuction(ConfigurationSection templateConfigSection, SimpleRegionMarket plugin)
     {
-        super(templateConfigSection);
+        super(templateConfigSection, plugin);
         type = "bid";
     }
 

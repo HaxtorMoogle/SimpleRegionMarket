@@ -102,4 +102,10 @@ public @Data class Location
     {
         return String.format("Location[w:%s,c:(%d,%d,%d)]", world.getName(), x, y, z);
     }
+
+    public World getWorld()
+    {
+        // TODO Auto-generated method stub
+        return this.world;
+    }
 }
