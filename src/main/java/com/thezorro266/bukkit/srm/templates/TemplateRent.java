@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.thezorro266.bukkit.srm.templates;
+package main.java.com.thezorro266.bukkit.srm.templates;
 
 import com.thezorro266.bukkit.srm.LanguageSupport;
 import com.thezorro266.bukkit.srm.SimpleRegionMarket;
@@ -24,6 +24,8 @@ import com.thezorro266.bukkit.srm.Utils;
 import com.thezorro266.bukkit.srm.exceptions.ContentSaveException;
 import com.thezorro266.bukkit.srm.factories.RegionFactory;
 import com.thezorro266.bukkit.srm.factories.SignFactory;
+import com.thezorro266.bukkit.srm.templates.TemplateLease;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -38,7 +40,6 @@ public class TemplateRent extends TemplateLease {
 		type = "rent";
 	}
 
-	@Override
 	public void clickSign(Player player, SignFactory.Sign sign) {
 		RegionFactory.Region region = sign.getRegion();
 		if (isRegionOccupied(region)) {

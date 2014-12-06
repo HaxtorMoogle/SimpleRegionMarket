@@ -40,7 +40,6 @@ import com.thezorro266.bukkit.srm.exceptions.ThisShouldNeverHappenException;
 import com.thezorro266.bukkit.srm.factories.RegionFactory;
 import com.thezorro266.bukkit.srm.factories.RegionFactory.Region;
 import com.thezorro266.bukkit.srm.templates.Template;
-import com.thezorro266.bukkit.srm.templates.TemplateRent;
 import com.thezorro266.bukkit.srm.templates.TemplateSell;
 
 public class TemplateManager {
