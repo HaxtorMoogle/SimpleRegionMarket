@@ -267,8 +267,9 @@ public class WorldGuardManager {
         public UUID getUniqueId()
         {
             // TODO Auto-generated method stub
-            return null;
+            return player.getUniqueId();
         }
+
 
 	}
 }

@@ -33,10 +33,10 @@ public class VaultHook {
 		Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin(VAULT_PLGUIN_NAME);
 
 		if (plugin == null || !(plugin instanceof Vault)) {
-			SimpleRegionMarket.getInstance().getLogger().info(LanguageSupport.instance.getString("vault.notfound"));
+			plugin.getLogger().info(LanguageSupport.instance.getString("vault.notfound"));
 			vaultEnabled = false;
 		} else {
-			SimpleRegionMarket.getInstance().getLogger().info(LanguageSupport.instance.getString("vault.found"));
+		        plugin.getLogger().info(LanguageSupport.instance.getString("vault.found"));
 			vaultEnabled = true;
 		}
 	}

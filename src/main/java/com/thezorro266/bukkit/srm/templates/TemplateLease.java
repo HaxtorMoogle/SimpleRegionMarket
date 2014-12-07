@@ -42,7 +42,8 @@ import com.thezorro266.bukkit.srm.templates.interfaces.TimedTemplate;
 public class TemplateLease extends TemplateSell implements TimedTemplate {
 	protected int minTime = 60;
 	protected int maxTime = -1;
-
+	
+	
 	public TemplateLease(ConfigurationSection templateConfigSection) {
 		super(templateConfigSection);
 

@@ -212,7 +212,7 @@ public class SimpleRegionMarket extends JavaPlugin {
     public static SimpleRegionMarket getInstance()
     {
         // TODO Auto-generated method stub
-        return (SimpleRegionMarket) Bukkit.getPluginManager().getPlugin("SimpleRegionMarket");
+        return instance;
     }
     public Economy getEconomy()
     {

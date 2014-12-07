@@ -31,7 +31,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <majorversion>0.1</majorversion>
+        <majorversion>0.2M</majorversion>
         <state>indev</state>
         <bukkit.version>1.7.2-R0.3</bukkit.version>
         <worldguard.version>5.9.1-SNAPSHOT</worldguard.version>
