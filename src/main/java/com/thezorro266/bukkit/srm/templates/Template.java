@@ -24,11 +24,14 @@ import java.util.List;
 
 import com.thezorro266.bukkit.srm.exceptions.NotEnoughPermissionsException;
 import com.thezorro266.bukkit.srm.factories.RegionFactory;
+
 import lombok.Getter;
+
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+
 import com.thezorro266.bukkit.srm.SimpleRegionMarket;
 import com.thezorro266.bukkit.srm.exceptions.TemplateFormatException;
 import com.thezorro266.bukkit.srm.factories.RegionFactory.Region;
@@ -121,4 +124,16 @@ public abstract class Template {
 	abstract public void clickSign(Player player, Sign sign);
 
 	abstract public void updateSign(Sign sign);
+
+    public String getId()
+    {
+        // TODO Auto-generated method stub
+        return id;
+    }
+
+    public List<Region>  getRegionList()
+    {
+        // TODO Auto-generated method stub
+        return regionList;
+    }
 }

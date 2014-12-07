@@ -22,13 +22,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
+
 import lombok.Getter;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
+
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
@@ -40,6 +43,7 @@ import com.thezorro266.bukkit.srm.helpers.Location;
 import com.thezorro266.bukkit.srm.helpers.Options;
 import com.thezorro266.bukkit.srm.templates.SignTemplate;
 import com.thezorro266.bukkit.srm.templates.Template;
+import com.thezorro266.bukkit.srm.templates.TemplateSell;
 
 public class RegionFactory {
 	public static final RegionFactory instance = new RegionFactory();
@@ -167,7 +171,19 @@ public class RegionFactory {
 			options = new Options();
 		}
 
-		public String getName() {
+		public ArrayList<Sign> getSignList()
+        {
+            // TODO Auto-generated method stub
+            return signList;
+        }
+
+        public Options getOptions()
+        {
+            // TODO Auto-generated method stub
+            return options;
+        }
+
+        public String getName() {
 			return worldguardRegion.getId();
 		}
 
@@ -240,5 +256,29 @@ public class RegionFactory {
 		public String toString() {
 			return String.format("Region[%s,w:%s,t:%s]", getName(), world.getName(), template.toString());
 		}
+
+        public World getWorld()
+        {
+            // TODO Auto-generated method stub
+            return world;
+        }
+
+        public Template getTemplate()
+        {
+            // TODO Auto-generated method stub
+            return template;
+        }
+
+        public ProtectedRegion getWorldguardRegion()
+        {
+            // TODO Auto-generated method stub
+            return worldguardRegion;
+        }
 	}
+
+    public int getRegionCount()
+    {
+        // TODO Auto-generated method stub
+        return regionCount;
+    }
 }

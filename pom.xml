@@ -22,7 +22,7 @@
 
     <groupId>com.thezorro266.bukkit</groupId>
     <artifactId>srm</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2M-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Simple Region Market</name>
@@ -57,30 +57,28 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>${bukkit.version}</version>
-            <scope>compile</scope>
-            <type>jar</type>
+            <version>1.8-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.sk89q</groupId>
             <artifactId>worldguard</artifactId>
-            <version>${worldguard.version}</version>
-            <scope>compile</scope>
-            <type>jar</type>
+            <version>6.0S-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>Vault</artifactId>
-            <version>${vault.version}</version>
-            <scope>compile</scope>
-            <type>jar</type>
+            <version>1.4.2</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.12.2</version>
+            <version>1.14.8</version>
             <scope>provided</scope>
-            <type>jar</type>
+        </dependency>
+        <dependency>
+        	<groupId>com.sk89q</groupId>
+        	<artifactId>worldedit</artifactId>
+        	<version>6.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

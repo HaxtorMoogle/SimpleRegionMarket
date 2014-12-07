@@ -141,7 +141,13 @@ public class SignFactory {
 			options = new Options();
 		}
 
-		public void clear() {
+		public Options getOptions()
+        {
+            // TODO Auto-generated method stub
+            return options;
+        }
+
+        public void clear() {
 			setContent(new String[SIGN_LINE_COUNT]);
 		}
 
@@ -188,5 +194,17 @@ public class SignFactory {
 		public String toString() {
 			return String.format("Sign[r:%s,l:%s]", region.getName(), location);
 		}
+
+        public Region getRegion()
+        {
+            // TODO Auto-generated method stub
+            return region;
+        }
+
+        public Location getLocation()
+        {
+            // TODO Auto-generated method stub
+            return location;
+        }
 	}
 }

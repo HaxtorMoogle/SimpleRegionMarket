@@ -23,8 +23,13 @@ import java.text.MessageFormat;
 import java.util.logging.Level;
 
 import com.thezorro266.bukkit.srm.hooks.*;
+
 import lombok.Getter;
+
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import com.thezorro266.bukkit.srm.exceptions.ContentLoadException;
 import com.thezorro266.bukkit.srm.exceptions.TemplateFormatException;
 import com.thezorro266.bukkit.srm.factories.RegionFactory;
@@ -203,4 +208,56 @@ public class SimpleRegionMarket extends JavaPlugin {
 			}
 		}
 	}
+
+    public static SimpleRegionMarket getInstance()
+    {
+        // TODO Auto-generated method stub
+        return (SimpleRegionMarket) Bukkit.getPluginManager().getPlugin("SimpleRegionMarket");
+    }
+    public Economy getEconomy()
+    {
+        return economy;
+    }
+
+    public TemplateManager getTemplateManager()
+    {
+        // TODO Auto-generated method stub
+        return templateManager;
+    }
+
+    public WorldHelper getWorldHelper()
+    {
+        // TODO Auto-generated method stub
+        return worldHelper;
+    }
+
+    public  WorldEditManager getWorldEditManager()
+    {
+        // TODO Auto-generated method stub
+        return worldEditManager;
+    }
+
+    public  WorldGuardManager getWorldGuardManager()
+    {
+        // TODO Auto-generated method stub
+        return worldGuardManager;
+    }
+
+    public PlayerManager getPlayerManager()
+    {
+        // TODO Auto-generated method stub
+        return playerManager;
+    }
+
+    public Permissions getPermissions()
+    {
+        // TODO Auto-generated method stub
+        return permissions;
+    }
+
+    public LocationSignHelper getLocationSignHelper()
+    {
+        // TODO Auto-generated method stub
+        return locationSignHelper;
+    }
 }

@@ -18,8 +18,6 @@
 
 package com.thezorro266.bukkit.srm.hooks;
 
-import com.thezorro266.bukkit.srm.SimpleRegionMarket;
-
 public abstract class Economy {
 	protected boolean enabled = false;
 
