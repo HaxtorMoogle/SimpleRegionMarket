@@ -18,8 +18,6 @@
 
 package com.thezorro266.bukkit.srm.templates;
 
-import static com.thezorro266.bukkit.srm.factories.SignFactory.Sign.SIGN_LINE_COUNT;
-
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,27 +29,27 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import com.thezorro266.bukkit.srm.factories.SignFactory.Sign;
+import com.thezorro266.bukkit.srm.Sign;
 import com.thezorro266.bukkit.srm.helpers.Location;
 import com.thezorro266.bukkit.srm.region.Region;
 
 public abstract class SignTemplate extends Template
 {
-    protected final String[] signInput = new String[SIGN_LINE_COUNT];
+    protected final String[] signInput = new String[Sign.SIGN_LINE_COUNT];
     protected final HashMap<String, String[]> signOutput = new HashMap<String, String[]>();
 
     public SignTemplate(ConfigurationSection templateConfigSection)
     {
         super(templateConfigSection);
-        for (int i = 0; i < SIGN_LINE_COUNT; i++)
+        for (int i = 0; i < Sign.SIGN_LINE_COUNT; i++)
         {
             signInput[i] = templateConfigSection.getString("input." + (i + 1));
         }
 
         for (String outputType : templateConfigSection.getConfigurationSection("output").getKeys(false))
         {
-            String[] tempOutput = new String[SIGN_LINE_COUNT];
-            for (int i = 0; i < SIGN_LINE_COUNT; i++)
+            String[] tempOutput = new String[Sign.SIGN_LINE_COUNT];
+            for (int i = 0; i < Sign.SIGN_LINE_COUNT; i++)
             {
                 tempOutput[i] = templateConfigSection.getString("output." + outputType + "." + (i + 1));
             }
@@ -88,7 +86,7 @@ public abstract class SignTemplate extends Template
     {
         HashMap<String, String> outputMap = new HashMap<String, String>();
 
-        for (int i = 0; i < SIGN_LINE_COUNT; i++)
+        for (int i = 0; i < Sign.SIGN_LINE_COUNT; i++)
         {
             String inputLine = signTemplate.signInput[i];
             if (inputLine != null && !inputLine.isEmpty())
@@ -139,7 +137,7 @@ public abstract class SignTemplate extends Template
     @Override
     public boolean createSign(Player player, Block block, String[] lines)
     {
-        if (lines == null || lines.length != SIGN_LINE_COUNT)
+        if (lines == null || lines.length != Sign.SIGN_LINE_COUNT)
         {
             throw new IllegalArgumentException("Lines array must be in the correct format and must not be null");
         }
@@ -164,8 +162,8 @@ public abstract class SignTemplate extends Template
         {
             throw new IllegalArgumentException("Sign must not be null");
         }
-
-        String[] lines = new String[SIGN_LINE_COUNT];
+        
+        String[] lines = new String[Sign.SIGN_LINE_COUNT];
         updateSignLines(sign.getRegion(), lines);
         sign.setContent(lines);
     }
@@ -183,7 +181,7 @@ public abstract class SignTemplate extends Template
                 {
 
                     // Set lines in the input String array
-                    for (int i = 0; i < SIGN_LINE_COUNT; i++)
+                    for (int i = 0; i < Sign.SIGN_LINE_COUNT; i++)
                     {
                         lines[i] = replaceTokens(outputLines[i], region.getReplacementMap());
                     }

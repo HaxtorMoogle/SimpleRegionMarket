@@ -33,6 +33,7 @@ import org.bukkit.entity.Player;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.thezorro266.bukkit.srm.LanguageSupport;
+import com.thezorro266.bukkit.srm.Sign;
 import com.thezorro266.bukkit.srm.SimpleRegionMarket;
 import com.thezorro266.bukkit.srm.Utils;
 import com.thezorro266.bukkit.srm.exceptions.ContentSaveException;
@@ -172,7 +173,7 @@ public class TemplateLease extends TemplateSell implements TimedTemplate
     }
 
     @Override
-    public void clickSign(Player player, SignFactory.Sign sign)
+    public void clickSign(Player player, Sign sign)
     {
         Region region = sign.getRegion();
         if (isRegionOccupied(region))
@@ -261,7 +262,7 @@ public class TemplateLease extends TemplateSell implements TimedTemplate
     }
 
     @Override
-    public SignFactory.Sign makeSign(Player player, Block block, HashMap<String, String> inputMap)
+    public Sign makeSign(Player player, Block block, HashMap<String, String> inputMap)
     {
         ProtectedRegion worldguardRegion = RegionFactory.getProtectedRegionFromLocation(Location.fromBlock(block), inputMap.get("region"));
 
@@ -368,7 +369,7 @@ public class TemplateLease extends TemplateSell implements TimedTemplate
                     return null;
                 }
 
-            SignFactory.Sign sign = region.addBlockAsSign(block);
+            Sign sign = region.addBlockAsSign(block);
 
             try
             {

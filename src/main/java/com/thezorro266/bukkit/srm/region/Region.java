@@ -11,8 +11,8 @@ import org.bukkit.configuration.Configuration;
 
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.thezorro266.bukkit.srm.Sign;
 import com.thezorro266.bukkit.srm.factories.SignFactory;
-import com.thezorro266.bukkit.srm.factories.SignFactory.Sign;
 import com.thezorro266.bukkit.srm.helpers.Location;
 import com.thezorro266.bukkit.srm.helpers.Options;
 import com.thezorro266.bukkit.srm.templates.SignTemplate;

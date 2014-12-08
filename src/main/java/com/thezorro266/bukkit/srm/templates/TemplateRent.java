@@ -19,10 +19,10 @@
 package com.thezorro266.bukkit.srm.templates;
 
 import com.thezorro266.bukkit.srm.LanguageSupport;
+import com.thezorro266.bukkit.srm.Sign;
 import com.thezorro266.bukkit.srm.SimpleRegionMarket;
 import com.thezorro266.bukkit.srm.Utils;
 import com.thezorro266.bukkit.srm.exceptions.ContentSaveException;
-import com.thezorro266.bukkit.srm.factories.SignFactory;
 import com.thezorro266.bukkit.srm.hooks.Economy;
 import com.thezorro266.bukkit.srm.region.Region;
 
@@ -43,7 +43,7 @@ public class TemplateRent extends TemplateLease
     }
 
     @Override
-    public void clickSign(Player player, SignFactory.Sign sign)
+    public void clickSign(Player player, Sign sign)
     {
         Region region = sign.getRegion();
         if (isRegionOccupied(region))

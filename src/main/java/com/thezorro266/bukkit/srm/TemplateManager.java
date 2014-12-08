@@ -18,8 +18,6 @@
 
 package com.thezorro266.bukkit.srm;
 
-import static com.thezorro266.bukkit.srm.factories.SignFactory.Sign.SIGN_LINE_COUNT;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
@@ -242,7 +240,7 @@ public class TemplateManager
 
     private void update(File templateFile, YamlConfiguration templateYaml) throws TemplateFormatException, IOException
     {
-
+        
         // Old
         if (templateYaml.isSet("templates_version"))
         {
@@ -308,9 +306,10 @@ public class TemplateManager
                     }
                     templateYaml.set(templateId + ".output.id", null);
                 }
+                
                 if (templateYaml.isSet(templateId + ".output"))
                 {
-                    for (int i = 0; i < SIGN_LINE_COUNT; i++)
+                    for (int i = 0; i < Sign.SIGN_LINE_COUNT; i++)
                     {
                         templateYaml.set(templateId + ".output.free." + (i + 1), templateYaml.get(templateId + ".output." + (i + 1)));
                         templateYaml.set(templateId + ".output." + (i + 1), null);
@@ -326,7 +325,7 @@ public class TemplateManager
                 }
                 if (templateYaml.isSet(templateId + ".taken"))
                 {
-                    for (int i = 0; i < SIGN_LINE_COUNT; i++)
+                    for (int i = 0; i < Sign.SIGN_LINE_COUNT; i++)
                     {
                         templateYaml.set(templateId + ".output.occupied." + (i + 1), templateYaml.get(templateId + ".taken." + (i + 1)));
                     }
@@ -335,7 +334,7 @@ public class TemplateManager
 
                 if (templateYaml.isSet(templateId + ".input"))
                 {
-                    for (int i = 0; i < SIGN_LINE_COUNT; ++i)
+                    for (int i = 0; i < Sign.SIGN_LINE_COUNT; ++i)
                     {
                         String path = templateId + ".input." + (i + 1);
                         if (templateYaml.isSet(path))
@@ -348,7 +347,7 @@ public class TemplateManager
                 String type = templateYaml.getString(templateId + ".type");
                 if (templateYaml.isSet(templateId + ".output.occupied"))
                 {
-                    for (int i = 1; i <= SIGN_LINE_COUNT; ++i)
+                    for (int i = 1; i <= Sign.SIGN_LINE_COUNT; ++i)
                     {
                         String tempPath = String.format("%s.output.occupied.%d", templateId, i);
                         String str = templateYaml.getString(tempPath);
