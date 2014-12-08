@@ -33,78 +33,93 @@ import com.thezorro266.bukkit.srm.factories.SignFactory.Sign;
 import com.thezorro266.bukkit.srm.helpers.Location;
 import com.thezorro266.bukkit.srm.templates.Template;
 
-public class EventListener implements Listener {
-	public EventListener() {
-		SimpleRegionMarket.getInstance().getServer().getPluginManager()
-				.registerEvents(this, SimpleRegionMarket.getInstance());
-	}
+public class EventListener implements Listener
+{
+    public EventListener()
+    {
+        SimpleRegionMarket.getInstance().getServer().getPluginManager().registerEvents(this, SimpleRegionMarket.getInstance());
+    }
 
-	@EventHandler
-	public void onSignChanged(SignChangeEvent event) {
-		if (!event.isCancelled()) {
-			Player player = event.getPlayer();
-			Sign sign = SignFactory.instance.getSignFromLocation(Location.fromBlock(event.getBlock()));
-			if (sign != null) {
-				if (!sign.getRegion().getTemplate().breakSign(player, sign)) {
-					event.setCancelled(true);
-					return;
-				}
-			}
+    @EventHandler
+    public void onSignChanged(SignChangeEvent event)
+    {
+        if (!event.isCancelled())
+        {
+            Player player = event.getPlayer();
+            Sign sign = SignFactory.instance.getSignFromLocation(Location.fromBlock(event.getBlock()));
+            if (sign != null)
+            {
+                if (!sign.getRegion().getTemplate().breakSign(player, sign))
+                {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
 
-			synchronized (SimpleRegionMarket.getInstance().getTemplateManager().getTemplateList()) {
-				for (Template template : SimpleRegionMarket.getInstance().getTemplateManager().getTemplateList()) {
-					String[] lines = event.getLines();
-					if (template.isSignApplicable(Location.fromBlock(event.getBlock()), lines)) {
-						if (template.createSign(player, event.getBlock(), lines)) {
-							break;
-						}
-					}
-				}
-			}
-		}
-	}
+            synchronized (SimpleRegionMarket.getInstance().getTemplateManager().getTemplateList())
+            {
+                for (Template template : SimpleRegionMarket.getInstance().getTemplateManager().getTemplateList())
+                {
+                    String[] lines = event.getLines();
+                    if (template.isSignApplicable(Location.fromBlock(event.getBlock()), lines))
+                    {
+                        if (template.createSign(player, event.getBlock(), lines))
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-	@EventHandler
-	public void onBlockBreak(BlockBreakEvent event) {
-		if (!event.isCancelled()) {
-			Sign sign = SignFactory.instance.getSignFromLocation(Location.fromBlock(event.getBlock()));
-			if (sign != null) {
-				if (sign.getRegion().getTemplate().breakSign(event.getPlayer(), sign)) {
-					try {
-						SimpleRegionMarket.getInstance().getTemplateManager().saveRegion(sign.getRegion());
-					} catch (ContentSaveException e) {
-						if (event.getPlayer() != null)
-							event.getPlayer()
-									.sendMessage(
-											ChatColor.RED
-													+ LanguageSupport.instance
-															.getString("region.save.problem.playermsg"));
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event)
+    {
+        if (!event.isCancelled())
+        {
+            Sign sign = SignFactory.instance.getSignFromLocation(Location.fromBlock(event.getBlock()));
+            if (sign != null)
+            {
+                if (sign.getRegion().getTemplate().breakSign(event.getPlayer(), sign))
+                {
+                    try
+                    {
+                        SimpleRegionMarket.getInstance().getTemplateManager().saveRegion(sign.getRegion());
+                    }
+                    catch (ContentSaveException e)
+                    {
+                        if (event.getPlayer() != null)
+                            event.getPlayer().sendMessage(ChatColor.RED + LanguageSupport.instance.getString("region.save.problem.playermsg"));
 
-						SimpleRegionMarket
-								.getInstance()
-								.getLogger()
-								.severe(MessageFormat.format(LanguageSupport.instance
-										.getString("region.save.problem.console"), sign.getRegion().getName()));
-						SimpleRegionMarket.getInstance().printError(e);
-					}
-				} else {
-					event.setCancelled(true);
-				}
-			}
-		}
-	}
+                        SimpleRegionMarket.getInstance().getLogger().severe(MessageFormat.format(LanguageSupport.instance.getString("region.save.problem.console"), sign.getRegion().getName()));
+                        SimpleRegionMarket.getInstance().printError(e);
+                    }
+                }
+                else
+                {
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
 
-	@EventHandler
-	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (event.hasBlock()) {
-			if (SignFactory.instance.isSign(event.getClickedBlock())) {
-				if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-					Sign sign = SignFactory.instance.getSignFromLocation(Location.fromBlock(event.getClickedBlock()));
-					if (sign != null) {
-						sign.getRegion().getTemplate().clickSign(event.getPlayer(), sign);
-					}
-				}
-			}
-		}
-	}
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event)
+    {
+        if (event.hasBlock())
+        {
+            if (SignFactory.instance.isSign(event.getClickedBlock()))
+            {
+                if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
+                {
+                    Sign sign = SignFactory.instance.getSignFromLocation(Location.fromBlock(event.getClickedBlock()));
+                    if (sign != null)
+                    {
+                        sign.getRegion().getTemplate().clickSign(event.getPlayer(), sign);
+                    }
+                }
+            }
+        }
+    }
 }

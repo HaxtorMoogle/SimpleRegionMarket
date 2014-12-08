@@ -24,20 +24,24 @@ import org.bukkit.entity.Player;
 
 import java.lang.ref.WeakReference;
 
-public class RegionOwner {
-	private WeakReference<Player> player;
-	private WeakReference<Region> region;
+public class RegionOwner
+{
+    private WeakReference<Player> player;
+    private WeakReference<Region> region;
 
-	public RegionOwner(Player player, Region region) {
-		this.player = new WeakReference<Player>(player);
-		this.region = new WeakReference<Region>(region);
-	}
+    public RegionOwner(Player player, Region region)
+    {
+        this.player = new WeakReference<Player>(player);
+        this.region = new WeakReference<Region>(region);
+    }
 
-	public Player getPlayer() {
-		return player.get();
-	}
-	
-	public Region getRegion() {
-		return region.get();
-	}
+    public Player getPlayer()
+    {
+        return player.get();
+    }
+
+    public Region getRegion()
+    {
+        return region.get();
+    }
 }

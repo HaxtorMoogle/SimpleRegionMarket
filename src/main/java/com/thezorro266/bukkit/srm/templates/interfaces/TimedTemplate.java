@@ -22,9 +22,10 @@ import org.bukkit.entity.Player;
 
 import com.thezorro266.bukkit.srm.region.Region;
 
-public interface TimedTemplate {
+public interface TimedTemplate
+{
 
-	public boolean cancel(Region region, Player player);
+    public boolean cancel(Region region, Player player);
 
-	public void schedule();
+    public void schedule();
 }

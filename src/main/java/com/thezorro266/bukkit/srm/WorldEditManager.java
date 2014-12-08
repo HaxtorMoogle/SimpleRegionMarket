@@ -22,8 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 
-import lombok.Getter;
-
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -47,144 +45,149 @@ import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.thezorro266.bukkit.srm.exceptions.ThisShouldNeverHappenException;
 import com.thezorro266.bukkit.srm.region.Region;
 
-public class WorldEditManager {
-	private static final String WORLD_EDIT_PLUGIN_NAME = "WorldEdit"; //NON-NLS
-	private static final String REGIONS_SCHEMATIC_FORMAT_STRING = "%s.schematic"; //NON-NLS
-	@Getter
-	private WorldEdit worldedit;
-	private WorldEditPlugin worldEditPlugin;
+public class WorldEditManager
+{
+    private static final String WORLD_EDIT_PLUGIN_NAME = "WorldEdit"; // NON-NLS
+    private static final String REGIONS_SCHEMATIC_FORMAT_STRING = "%s.schematic"; // NON-NLS
 
-	public void load() {
-		Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin(WORLD_EDIT_PLUGIN_NAME);
+    private WorldEdit worldedit;
+    private WorldEditPlugin worldEditPlugin;
 
-		if (plugin == null || !(plugin instanceof WorldEditPlugin)) {
-			throw new UnknownDependencyException(LanguageSupport.instance.getString("worldedit.notloaded"));
-		} else {
-			worldEditPlugin = (WorldEditPlugin) plugin;
-			worldedit = WorldEdit.getInstance();
-		}
-	}
+    public void load()
+    {
+        Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin(WORLD_EDIT_PLUGIN_NAME);
 
-	public File getSchematicFile(Region region) {
-		return new File(
-				new File(
-						new File(
-								new File(
-										SimpleRegionMarket.getInstance().getDataFolder(),
-										TemplateManager.REGIONS_FOLDER
-								),
-								region.getTemplate().getId().toLowerCase()
-						),
-						region.getWorld().getName()
-				),
-				String.format(REGIONS_SCHEMATIC_FORMAT_STRING, region.getName()));
-	}
+        if (plugin == null || !(plugin instanceof WorldEditPlugin))
+        {
+            throw new UnknownDependencyException(LanguageSupport.instance.getString("worldedit.notloaded"));
+        }
+        else
+        {
+            worldEditPlugin = (WorldEditPlugin) plugin;
+            worldedit = WorldEdit.getInstance();
+        }
+    }
 
-	public void replaceRegionFromSchematic(Region region) {
-		if (region.getWorldguardRegion() instanceof ProtectedCuboidRegion) {
-			File schematicFile = getSchematicFile(region);
+    public File getSchematicFile(Region region)
+    {
+        return new File(new File(new File(new File(SimpleRegionMarket.getInstance().getDataFolder(), TemplateManager.REGIONS_FOLDER), region.getTemplate().getId().toLowerCase()), region.getWorld()
+                .getName()), String.format(REGIONS_SCHEMATIC_FORMAT_STRING, region.getName()));
+    }
 
-			CuboidClipboard clipboard;
-			try {
-				clipboard = SchematicFormat.MCEDIT.load(schematicFile);
-			} catch (IOException e) {
-				SimpleRegionMarket
-						.getInstance()
-						.getLogger()
-						.warning(
-								MessageFormat.format(
-										LanguageSupport.instance.getString("region.schematic.load.failure"),
-										schematicFile.getPath()));
-				SimpleRegionMarket.getInstance().printError(e);
-				return;
-			} catch (DataException e) {
-				SimpleRegionMarket
-						.getInstance()
-						.getLogger()
-						.warning(
-								MessageFormat.format(
-										LanguageSupport.instance.getString("region.schematic.load.failure"),
-										schematicFile.getPath()));
-				SimpleRegionMarket.getInstance().printError(e);
-				return;
-			}
+    public void replaceRegionFromSchematic(Region region)
+    {
+        if (region.getWorldguardRegion() instanceof ProtectedCuboidRegion)
+        {
+            File schematicFile = getSchematicFile(region);
 
-			EditSession session = worldedit.getEditSessionFactory().getEditSession(
-					BukkitUtil.getLocalWorld(region.getWorld()), -1);
-			session.enableQueue();
+            CuboidClipboard clipboard;
+            try
+            {
+                clipboard = SchematicFormat.MCEDIT.load(schematicFile);
+            }
+            catch (IOException e)
+            {
+                SimpleRegionMarket.getInstance().getLogger().warning(MessageFormat.format(LanguageSupport.instance.getString("region.schematic.load.failure"), schematicFile.getPath()));
+                SimpleRegionMarket.getInstance().printError(e);
+                return;
+            }
+            catch (DataException e)
+            {
+                SimpleRegionMarket.getInstance().getLogger().warning(MessageFormat.format(LanguageSupport.instance.getString("region.schematic.load.failure"), schematicFile.getPath()));
+                SimpleRegionMarket.getInstance().printError(e);
+                return;
+            }
 
-			Vector pos = clipboard.getOrigin();
-			try {
-				clipboard.place(session, pos, false);
-			} catch (MaxChangedBlocksException e) {
-				throw new ThisShouldNeverHappenException("We can change infinite blocks", e);
-			}
-			clipboard.pasteEntities(pos);
+            EditSession session = worldedit.getEditSessionFactory().getEditSession(BukkitUtil.getLocalWorld(region.getWorld()), -1);
+            session.enableQueue();
 
-			ProtectedCuboidRegion cuboid = (ProtectedCuboidRegion) region.getWorldguardRegion();
+            Vector pos = clipboard.getOrigin();
+            try
+            {
+                clipboard.place(session, pos, false);
+            }
+            catch (MaxChangedBlocksException e)
+            {
+                throw new ThisShouldNeverHappenException("We can change infinite blocks", e);
+            }
+            clipboard.pasteEntities(pos);
 
-			BlockVector min = cuboid.getMinimumPoint();
-			BlockVector max = cuboid.getMaximumPoint();
+            ProtectedCuboidRegion cuboid = (ProtectedCuboidRegion) region.getWorldguardRegion();
 
-			// Get stuck players free
-			for (Player player : region.getWorld().getPlayers()) {
-				BukkitPlayer bp = worldEditPlugin.wrapPlayer(player);
-				if (bp.getBlockIn().containedWithin(min.subtract(0, 1, 0), max)) {
-					// TODO: Does not work, seems to be a WorldEdit problem
-					bp.findFreePosition();
-				}
-			}
+            BlockVector min = cuboid.getMinimumPoint();
+            BlockVector max = cuboid.getMaximumPoint();
 
-			session.flushQueue();
-		}
-	}
+            // Get stuck players free
+            for (Player player : region.getWorld().getPlayers())
+            {
+                BukkitPlayer bp = worldEditPlugin.wrapPlayer(player);
+                if (bp.getBlockIn().containedWithin(min.subtract(0, 1, 0), max))
+                {
+                    // TODO: Does not work, seems to be a WorldEdit problem
+                    bp.findFreePosition();
+                }
+            }
 
-	public void saveRegionToSchematic(Region region) throws IOException {
-		if (region.getWorldguardRegion() instanceof ProtectedCuboidRegion) {
-			File schematicFile = getSchematicFile(region);
+            session.flushQueue();
+        }
+    }
 
-			CuboidClipboard clipboard = getClipboardFromRegion(region);
+    public void saveRegionToSchematic(Region region) throws IOException
+    {
+        if (region.getWorldguardRegion() instanceof ProtectedCuboidRegion)
+        {
+            File schematicFile = getSchematicFile(region);
 
-			if (!schematicFile.exists()) {
-				if (!schematicFile.getParentFile().exists()) {
-					schematicFile.getParentFile().mkdirs();
-				}
-				schematicFile.createNewFile();
-			}
-			try {
-				SchematicFormat.MCEDIT.save(clipboard, schematicFile);
-			} catch (DataException e) {
-				throw new ThisShouldNeverHappenException("There was a data exception from WorldEdit's internal format",
-						e);
-			}
-		}
-	}
+            CuboidClipboard clipboard = getClipboardFromRegion(region);
 
-	public CuboidClipboard getClipboardFromRegion(Region region) {
-		if (region.getWorldguardRegion() instanceof ProtectedCuboidRegion) {
-			ProtectedCuboidRegion cuboid = (ProtectedCuboidRegion) region.getWorldguardRegion();
+            if (!schematicFile.exists())
+            {
+                if (!schematicFile.getParentFile().exists())
+                {
+                    schematicFile.getParentFile().mkdirs();
+                }
+                schematicFile.createNewFile();
+            }
+            try
+            {
+                SchematicFormat.MCEDIT.save(clipboard, schematicFile);
+            }
+            catch (DataException e)
+            {
+                throw new ThisShouldNeverHappenException("There was a data exception from WorldEdit's internal format", e);
+            }
+        }
+    }
 
-			BlockVector min = cuboid.getMinimumPoint();
-			BlockVector max = cuboid.getMaximumPoint();
+    public CuboidClipboard getClipboardFromRegion(Region region)
+    {
+        if (region.getWorldguardRegion() instanceof ProtectedCuboidRegion)
+        {
+            ProtectedCuboidRegion cuboid = (ProtectedCuboidRegion) region.getWorldguardRegion();
 
-			CuboidClipboard clipboard = new CuboidClipboard(max.subtract(min).add(Vector.ONE), min);
-			CuboidSelection selection = new CuboidSelection(region.getWorld(), min, max);
+            BlockVector min = cuboid.getMinimumPoint();
+            BlockVector max = cuboid.getMaximumPoint();
 
-			for (int x = 0; x < selection.getWidth(); ++x) {
-				for (int y = 0; y < selection.getHeight(); ++y) {
-					for (int z = 0; z < selection.getLength(); ++z) {
-						BlockVector vector = new BlockVector(x, y, z);
-						Block block = region.getWorld().getBlockAt(selection.getMinimumPoint().getBlockX() + x,
-								selection.getMinimumPoint().getBlockY() + y,
-								selection.getMinimumPoint().getBlockZ() + z);
-						BaseBlock baseBlock = new BaseBlock(block.getTypeId(), block.getData());
+            CuboidClipboard clipboard = new CuboidClipboard(max.subtract(min).add(Vector.ONE), min);
+            CuboidSelection selection = new CuboidSelection(region.getWorld(), min, max);
 
-						clipboard.setBlock(vector, baseBlock);
-					}
-				}
-			}
-			return clipboard;
-		}
-		return null;
-	}
+            for (int x = 0; x < selection.getWidth(); ++x)
+            {
+                for (int y = 0; y < selection.getHeight(); ++y)
+                {
+                    for (int z = 0; z < selection.getLength(); ++z)
+                    {
+                        BlockVector vector = new BlockVector(x, y, z);
+                        Block block = region.getWorld().getBlockAt(selection.getMinimumPoint().getBlockX() + x, selection.getMinimumPoint().getBlockY() + y,
+                                selection.getMinimumPoint().getBlockZ() + z);
+                        BaseBlock baseBlock = new BaseBlock(block.getTypeId(), block.getData());
+
+                        clipboard.setBlock(vector, baseBlock);
+                    }
+                }
+            }
+            return clipboard;
+        }
+        return null;
+    }
 }

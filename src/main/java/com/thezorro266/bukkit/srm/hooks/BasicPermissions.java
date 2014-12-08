@@ -23,28 +23,34 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
-public class BasicPermissions extends Permissions {
-	public BasicPermissions() {
-		enabled = true;
-	}
+public class BasicPermissions extends Permissions
+{
+    public BasicPermissions()
+    {
+        enabled = true;
+    }
 
-	@Override
-	public boolean hasPermission(CommandSender sender, String node) {
-		return isEnabled() ? sender.hasPermission(node) : sender.isOp();
-	}
+    @Override
+    public boolean hasPermission(CommandSender sender, String node)
+    {
+        return isEnabled() ? sender.hasPermission(node) : sender.isOp();
+    }
 
-	@Override
-	public boolean hasPermission(Player player, String node) {
-		return isEnabled() ? player.hasPermission(node) : player.isOp();
-	}
+    @Override
+    public boolean hasPermission(Player player, String node)
+    {
+        return isEnabled() ? player.hasPermission(node) : player.isOp();
+    }
 
-	@Override
-	public boolean hasPermissionListSupport() {
-		return false;
-	}
+    @Override
+    public boolean hasPermissionListSupport()
+    {
+        return false;
+    }
 
-	@Override
-	public ArrayList<String> getPermissionList(Player player) {
-		return null;
-	}
+    @Override
+    public ArrayList<String> getPermissionList(Player player)
+    {
+        return null;
+    }
 }

@@ -18,19 +18,23 @@
 
 package com.thezorro266.bukkit.srm.exceptions;
 
-public class ThisShouldNeverHappenException extends RuntimeException {
+public class ThisShouldNeverHappenException extends RuntimeException
+{
 
-	private static final long serialVersionUID = -5134174393398186655L;
+    private static final long serialVersionUID = -5134174393398186655L;
 
-	public ThisShouldNeverHappenException() {
-		super();
-	}
+    public ThisShouldNeverHappenException()
+    {
+        super();
+    }
 
-	public ThisShouldNeverHappenException(String message) {
-		super(message);
-	}
+    public ThisShouldNeverHappenException(String message)
+    {
+        super(message);
+    }
 
-	public ThisShouldNeverHappenException(String message, Throwable error) {
-		super(message, error);
-	}
+    public ThisShouldNeverHappenException(String message, Throwable error)
+    {
+        super(message, error);
+    }
 }

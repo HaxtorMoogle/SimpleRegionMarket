@@ -29,49 +29,52 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 
-public class VaultPermissions extends Permissions {
-	private Permission permission = null;
+public class VaultPermissions extends Permissions
+{
+    private Permission permission = null;
 
-	public VaultPermissions() {
-		RegisteredServiceProvider<Permission> permissionProvider = Bukkit.getServer().getServicesManager()
-				.getRegistration(net.milkbowl.vault.permission.Permission.class);
-		if (permissionProvider != null) {
-			permission = permissionProvider.getProvider();
-		}
+    public VaultPermissions()
+    {
+        RegisteredServiceProvider<Permission> permissionProvider = Bukkit.getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+        if (permissionProvider != null)
+        {
+            permission = permissionProvider.getProvider();
+        }
 
-		if (permission != null) {
-			SimpleRegionMarket
-					.getInstance()
-					.getLogger()
-					.info(MessageFormat.format(
-							LanguageSupport.instance.getString("vault.detected.permissionssystem"),
-							permission.getName()));
+        if (permission != null)
+        {
+            SimpleRegionMarket.getInstance().getLogger().info(MessageFormat.format(LanguageSupport.instance.getString("vault.detected.permissionssystem"), permission.getName()));
 
-			// Set enabled
-			enabled = true;
-		} else {
-			SimpleRegionMarket.getInstance().getLogger()
-					.info(LanguageSupport.instance.getString("vault.notdetected.permissionssystem"));
-		}
-	}
+            // Set enabled
+            enabled = true;
+        }
+        else
+        {
+            SimpleRegionMarket.getInstance().getLogger().info(LanguageSupport.instance.getString("vault.notdetected.permissionssystem"));
+        }
+    }
 
-	@Override
-	public boolean hasPermission(CommandSender sender, String node) {
-		return isEnabled() ? permission.has(sender, node) : sender.isOp();
-	}
+    @Override
+    public boolean hasPermission(CommandSender sender, String node)
+    {
+        return isEnabled() ? permission.has(sender, node) : sender.isOp();
+    }
 
-	@Override
-	public boolean hasPermission(Player player, String node) {
-		return isEnabled() ? permission.has(player, node) : player.isOp();
-	}
+    @Override
+    public boolean hasPermission(Player player, String node)
+    {
+        return isEnabled() ? permission.has(player, node) : player.isOp();
+    }
 
-	@Override
-	public boolean hasPermissionListSupport() {
-		return false;
-	}
+    @Override
+    public boolean hasPermissionListSupport()
+    {
+        return false;
+    }
 
-	@Override
-	public ArrayList<String> getPermissionList(Player player) {
-		return null;
-	}
+    @Override
+    public ArrayList<String> getPermissionList(Player player)
+    {
+        return null;
+    }
 }

@@ -24,7 +24,7 @@ public class WorldGuardOwnable
         this.world = region.getWorld();
         this.owners = region.getWorldguardRegion().getOwners();
         this.members = region.getWorldguardRegion().getMembers();
-        
+
     }
 
     public void addMember(LocalPlayer localPlayer)

@@ -18,22 +18,29 @@
 
 package com.thezorro266.bukkit.srm.hooks;
 
-public abstract class Economy {
-	protected boolean enabled = false;
+public abstract class Economy
+{
+    protected boolean enabled = false;
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
 
-	public abstract boolean isValidAccount(String account);
-	public abstract boolean hasEnough(String account, double money);
-	public abstract boolean subtractMoney(String account, double money);
-	public abstract boolean addMoney(String account, double money);
+    public abstract boolean isValidAccount(String account);
 
-	public String format(double money) {
-		if (isEnabled()) {
-			return String.format("%.2f", money); //NON-NLS
-		}
-		return "";
-	}
+    public abstract boolean hasEnough(String account, double money);
+
+    public abstract boolean subtractMoney(String account, double money);
+
+    public abstract boolean addMoney(String account, double money);
+
+    public String format(double money)
+    {
+        if (isEnabled())
+        {
+            return String.format("%.2f", money); // NON-NLS
+        }
+        return "";
+    }
 }

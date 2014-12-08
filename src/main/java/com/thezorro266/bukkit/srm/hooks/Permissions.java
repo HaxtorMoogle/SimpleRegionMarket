@@ -24,21 +24,28 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
-public abstract class Permissions {
-	protected boolean enabled = false;
+public abstract class Permissions
+{
+    protected boolean enabled = false;
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
 
-	public void checkPermission(CommandSender sender, String permNode) throws NotEnoughPermissionsException {
-		if (!hasPermission(sender, permNode)) {
-			throw new NotEnoughPermissionsException(sender, permNode);
-		}
-	}
+    public void checkPermission(CommandSender sender, String permNode) throws NotEnoughPermissionsException
+    {
+        if (!hasPermission(sender, permNode))
+        {
+            throw new NotEnoughPermissionsException(sender, permNode);
+        }
+    }
 
-	public abstract boolean hasPermission(CommandSender sender, String node);
-	public abstract boolean hasPermission(Player player, String node);
-	public abstract boolean hasPermissionListSupport();
-	public abstract ArrayList<String> getPermissionList(Player player);
+    public abstract boolean hasPermission(CommandSender sender, String node);
+
+    public abstract boolean hasPermission(Player player, String node);
+
+    public abstract boolean hasPermissionListSupport();
+
+    public abstract ArrayList<String> getPermissionList(Player player);
 }

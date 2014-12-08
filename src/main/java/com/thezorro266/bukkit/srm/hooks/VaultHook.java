@@ -23,24 +23,30 @@ import net.milkbowl.vault.Vault;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
-public class VaultHook {
-	private static final String VAULT_PLGUIN_NAME = "Vault"; //NON-NLS
+public class VaultHook
+{
+    private static final String VAULT_PLGUIN_NAME = "Vault"; // NON-NLS
 
-	private boolean vaultEnabled;
+    private boolean vaultEnabled;
 
-	public void load() {
-		Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin(VAULT_PLGUIN_NAME);
+    public void load()
+    {
+        Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin(VAULT_PLGUIN_NAME);
 
-		if (plugin == null || !(plugin instanceof Vault)) {
-			plugin.getLogger().info(LanguageSupport.instance.getString("vault.notfound"));
-			vaultEnabled = false;
-		} else {
-		        plugin.getLogger().info(LanguageSupport.instance.getString("vault.found"));
-			vaultEnabled = true;
-		}
-	}
+        if (plugin == null || !(plugin instanceof Vault))
+        {
+            plugin.getLogger().info(LanguageSupport.instance.getString("vault.notfound"));
+            vaultEnabled = false;
+        }
+        else
+        {
+            plugin.getLogger().info(LanguageSupport.instance.getString("vault.found"));
+            vaultEnabled = true;
+        }
+    }
 
-	public boolean isVaultEnabled() {
-		return vaultEnabled;
-	}
+    public boolean isVaultEnabled()
+    {
+        return vaultEnabled;
+    }
 }

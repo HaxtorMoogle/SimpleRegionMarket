@@ -19,8 +19,6 @@
 package com.thezorro266.bukkit.srm;
 
 import java.lang.ref.WeakReference;
-import java.util.Set;
-import java.util.UUID;
 import java.util.WeakHashMap;
 
 import org.bukkit.Bukkit;
@@ -28,17 +26,10 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.UnknownDependencyException;
-
 import com.moogle.MoogleGenericException;
-import com.sk89q.wepif.PermissionsResolverManager;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.domains.DefaultDomain;
-import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.thezorro266.bukkit.srm.factories.RegionFactory;
 import com.thezorro266.bukkit.srm.region.Region;
 
 public class WorldGuardManager
@@ -64,9 +55,10 @@ public class WorldGuardManager
         ownableMap.put(region, new WeakReference<WorldGuardOwnable>(wgo));
         return wgo;
     }
-    public WorldGuardManager ()
+
+    public WorldGuardManager()
     {
-        
+
     }
 
     public void load()

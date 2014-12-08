@@ -21,9 +21,6 @@ package com.thezorro266.bukkit.srm.factories;
 import java.util.Map;
 import java.util.Set;
 
-import lombok.Data;
-import lombok.Getter;
-
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -36,166 +33,212 @@ import com.thezorro266.bukkit.srm.helpers.Location;
 import com.thezorro266.bukkit.srm.helpers.Options;
 import com.thezorro266.bukkit.srm.region.Region;
 
-public class SignFactory {
-	public static final SignFactory instance = new SignFactory();
-	@Getter
-	private int signCount = 0;
+public class SignFactory
+{
+    public static final SignFactory instance = new SignFactory();
 
-	private SignFactory() {
-	}
+    private int signCount = 0;
 
-	public Sign createSign(Region region, Location location, boolean isWallSign, BlockFace direction) {
-		// Check for sign on location
-		Sign oldSign = SimpleRegionMarket.getInstance().getLocationSignHelper().getSign(location);
-		if (oldSign != null) {
-			throw new IllegalArgumentException("Location already has a sign");
-		}
+    private SignFactory()
+    {
+    }
 
-		// Create new sign
-		Sign sign = new Sign(region, location, isWallSign, direction);
+    public Sign createSign(Region region, Location location, boolean isWallSign, BlockFace direction)
+    {
+        // Check for sign on location
+        Sign oldSign = SimpleRegionMarket.getInstance().getLocationSignHelper().getSign(location);
+        if (oldSign != null)
+        {
+            throw new IllegalArgumentException("Location already has a sign");
+        }
 
-		region.getSignList().add(sign);
-		SimpleRegionMarket.getInstance().getLocationSignHelper().addSignAndLocation(sign);
+        // Create new sign
+        Sign sign = new Sign(region, location, isWallSign, direction);
 
-		++signCount;
+        region.getSignList().add(sign);
+        SimpleRegionMarket.getInstance().getLocationSignHelper().addSignAndLocation(sign);
 
-		return sign;
-	}
+        setSignCount(getSignCount() + 1);
 
-	public void destroySign(Sign sign) {
-		sign.getRegion().getSignList().remove(sign);
-		SimpleRegionMarket.getInstance().getLocationSignHelper().removeSignAndLocation(sign);
+        return sign;
+    }
 
-		--signCount;
-	}
+    public void destroySign(Sign sign)
+    {
+        sign.getRegion().getSignList().remove(sign);
+        SimpleRegionMarket.getInstance().getLocationSignHelper().removeSignAndLocation(sign);
 
-	public boolean isSign(Block block) {
-		return block.getType().equals(Material.WALL_SIGN) || block.getType().equals(Material.SIGN_POST);
-	}
+        setSignCount(getSignCount() - 1);
+    }
 
-	public Sign getSignFromLocation(Location location) {
-		return SimpleRegionMarket.getInstance().getLocationSignHelper().getSign(location);
-	}
+    public boolean isSign(Block block)
+    {
+        return block.getType().equals(Material.WALL_SIGN) || block.getType().equals(Material.SIGN_POST);
+    }
 
-	public void loadFromConfiguration(Configuration config, Region region, String path) throws ContentLoadException {
-		String regionName = region.getName();
-		String configRegionName = config.getString(path + "region");
-		if (regionName.equals(configRegionName)) {
-			Location location;
-			try {
-				location = Location.loadFromConfiguration(config, path + "location.");
-			} catch (ContentLoadException e) {
-				throw new ContentLoadException("Could not load location", e);
-			} catch (IllegalArgumentException e) {
-				throw new ContentLoadException("Could not create location", e);
-			}
-			boolean isWallSign = config.getBoolean(path + "is_wall_sign");
-			BlockFace direction = BlockFace.valueOf(config.getString(path + "direction"));
+    public Sign getSignFromLocation(Location location)
+    {
+        return SimpleRegionMarket.getInstance().getLocationSignHelper().getSign(location);
+    }
 
-			Sign sign;
-			try {
-				sign = createSign(region, location, isWallSign, direction);
-			} catch (IllegalArgumentException e) {
-				throw new ContentLoadException("Could not create sign", e);
-			}
+    public void loadFromConfiguration(Configuration config, Region region, String path) throws ContentLoadException
+    {
+        String regionName = region.getName();
+        String configRegionName = config.getString(path + "region");
+        if (regionName.equals(configRegionName))
+        {
+            Location location;
+            try
+            {
+                location = Location.loadFromConfiguration(config, path + "location.");
+            }
+            catch (ContentLoadException e)
+            {
+                throw new ContentLoadException("Could not load location", e);
+            }
+            catch (IllegalArgumentException e)
+            {
+                throw new ContentLoadException("Could not create location", e);
+            }
+            boolean isWallSign = config.getBoolean(path + "is_wall_sign");
+            BlockFace direction = BlockFace.valueOf(config.getString(path + "direction"));
 
-			// Check, if there are options
-			if (config.isSet(path + "options")) {
-				// Set sign options from values from options path
-				Set<Map.Entry<String, Object>> optionEntrySet = config.getConfigurationSection(path + "options")
-						.getValues(true).entrySet();
-				for (Map.Entry<String, Object> optionEntry : optionEntrySet) {
-					if (!(optionEntry.getValue() instanceof ConfigurationSection)) {
-						sign.getOptions().set(optionEntry.getKey(), optionEntry.getValue());
-					}
-				}
-			}
+            Sign sign;
+            try
+            {
+                sign = createSign(region, location, isWallSign, direction);
+            }
+            catch (IllegalArgumentException e)
+            {
+                throw new ContentLoadException("Could not create sign", e);
+            }
 
-			region.getTemplate().updateSign(sign);
-		} else {
-			throw new ContentLoadException("Region string in sign config did not match the outer region");
-		}
-	}
+            // Check, if there are options
+            if (config.isSet(path + "options"))
+            {
+                // Set sign options from values from options path
+                Set<Map.Entry<String, Object>> optionEntrySet = config.getConfigurationSection(path + "options").getValues(true).entrySet();
+                for (Map.Entry<String, Object> optionEntry : optionEntrySet)
+                {
+                    if (!(optionEntry.getValue() instanceof ConfigurationSection))
+                    {
+                        sign.getOptions().set(optionEntry.getKey(), optionEntry.getValue());
+                    }
+                }
+            }
 
-	public @Data
-	class Sign {
-		public static final int SIGN_LINE_COUNT = 4;
-		final Region region;
-		final Location location;
-		final boolean isWallSign;
-		final BlockFace direction;
-		private final Options options;
+            region.getTemplate().updateSign(sign);
+        }
+        else
+        {
+            throw new ContentLoadException("Region string in sign config did not match the outer region");
+        }
+    }
 
-		private Sign(Region region, Location location, boolean isWallSign, BlockFace direction) {
-			if (region == null) {
-				throw new IllegalArgumentException("Region must not be null");
-			}
-			if (location == null) {
-				throw new IllegalArgumentException("Location must not be null");
-			}
-			if (direction == null) {
-				throw new IllegalArgumentException("Direction must not be null");
-			}
+    public int getSignCount()
+    {
+        return signCount;
+    }
 
-			this.region = region;
-			this.location = new Location(location);
-			this.isWallSign = isWallSign;
-			this.direction = direction;
-			options = new Options();
-		}
+    public void setSignCount(int signCount)
+    {
+        this.signCount = signCount;
+    }
 
-		public Options getOptions()
+    public class Sign
+    {
+        public static final int SIGN_LINE_COUNT = 4;
+        final Region region;
+        final Location location;
+        final boolean isWallSign;
+        final BlockFace direction;
+        private final Options options;
+
+        private Sign(Region region, Location location, boolean isWallSign, BlockFace direction)
+        {
+            if (region == null)
+            {
+                throw new IllegalArgumentException("Region must not be null");
+            }
+            if (location == null)
+            {
+                throw new IllegalArgumentException("Location must not be null");
+            }
+            if (direction == null)
+            {
+                throw new IllegalArgumentException("Direction must not be null");
+            }
+
+            this.region = region;
+            this.location = new Location(location);
+            this.isWallSign = isWallSign;
+            this.direction = direction;
+            options = new Options();
+        }
+
+        public Options getOptions()
         {
             // TODO Auto-generated method stub
             return options;
         }
 
-        public void clear() {
-			setContent(new String[SIGN_LINE_COUNT]);
-		}
+        public void clear()
+        {
+            setContent(new String[SIGN_LINE_COUNT]);
+        }
 
-		public void setContent(String[] lines) {
-			if (lines == null || lines.length != SIGN_LINE_COUNT) {
-				clear();
-				throw new IllegalArgumentException("Lines array must be in the correct format and must not be null");
-			}
+        public void setContent(String[] lines)
+        {
+            if (lines == null || lines.length != SIGN_LINE_COUNT)
+            {
+                clear();
+                throw new IllegalArgumentException("Lines array must be in the correct format and must not be null");
+            }
 
-			Block block = location.getBlock();
-			if (!isSign(block)) {
-				block.setType(isWallSign ? Material.WALL_SIGN : Material.SIGN_POST);
-			}
-			org.bukkit.block.Sign signBlock = (org.bukkit.block.Sign) block.getState();
-			org.bukkit.material.Sign signMaterial = (org.bukkit.material.Sign) signBlock.getData();
-			if (!signMaterial.getFacing().equals(direction)) {
-				signMaterial.setFacingDirection(direction);
-			}
+            Block block = location.getBlock();
+            if (!isSign(block))
+            {
+                block.setType(isWallSign ? Material.WALL_SIGN : Material.SIGN_POST);
+            }
+            org.bukkit.block.Sign signBlock = (org.bukkit.block.Sign) block.getState();
+            org.bukkit.material.Sign signMaterial = (org.bukkit.material.Sign) signBlock.getData();
+            if (!signMaterial.getFacing().equals(direction))
+            {
+                signMaterial.setFacingDirection(direction);
+            }
 
-			for (int i = 0; i < SIGN_LINE_COUNT; i++) {
-				signBlock.setLine(i, lines[i]);
-			}
-			signBlock.update(true, false);
-		}
+            for (int i = 0; i < SIGN_LINE_COUNT; i++)
+            {
+                signBlock.setLine(i, lines[i]);
+            }
+            signBlock.update(true, false);
+        }
 
-		public void saveToConfiguration(Configuration config, String path) {
-			config.set(path + "region", region.getName());
-			location.saveToConfiguration(config, path + "location.");
-			config.set(path + "is_wall_sign", isWallSign);
-			config.set(path + "direction", direction.toString());
-			saveOptions(config, path + "options.");
-		}
+        public void saveToConfiguration(Configuration config, String path)
+        {
+            config.set(path + "region", region.getName());
+            location.saveToConfiguration(config, path + "location.");
+            config.set(path + "is_wall_sign", isWallSign);
+            config.set(path + "direction", direction.toString());
+            saveOptions(config, path + "options.");
+        }
 
-		private void saveOptions(Configuration config, String path) {
-			synchronized (options) {
-				for (Map.Entry<String, Object> optionEntry : options) {
-					config.set(path + optionEntry.getKey(), optionEntry.getValue());
-				}
-			}
-		}
+        private void saveOptions(Configuration config, String path)
+        {
+            synchronized (options)
+            {
+                for (Map.Entry<String, Object> optionEntry : options)
+                {
+                    config.set(path + optionEntry.getKey(), optionEntry.getValue());
+                }
+            }
+        }
 
-		@Override
-		public String toString() {
-			return String.format("Sign[r:%s,l:%s]", region.getName(), location);
-		}
+        @Override
+        public String toString()
+        {
+            return String.format("Sign[r:%s,l:%s]", region.getName(), location);
+        }
 
         public Region getRegion()
         {
@@ -208,5 +251,5 @@ public class SignFactory {
             // TODO Auto-generated method stub
             return location;
         }
-	}
+    }
 }

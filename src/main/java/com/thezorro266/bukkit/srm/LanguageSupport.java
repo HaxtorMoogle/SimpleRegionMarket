@@ -21,54 +21,63 @@ package com.thezorro266.bukkit.srm;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import lombok.Getter;
 
-public final class LanguageSupport {
-	public static final LanguageSupport instance = new LanguageSupport();
-	private static final String STANDARD_LANGUAGE = "en"; //NON-NLS
+public final class LanguageSupport
+{
+    public static final LanguageSupport instance = new LanguageSupport();
+    private static final String STANDARD_LANGUAGE = "en"; // NON-NLS
 
-	@Getter
-	private Locale locale;
-	private ResourceBundle languageResource;
+    private Locale locale;
+    private ResourceBundle languageResource;
 
-	private LanguageSupport() {
-		// Load English as default
-		load(STANDARD_LANGUAGE);
-	}
+    private LanguageSupport()
+    {
+        // Load English as default
+        load(STANDARD_LANGUAGE);
+    }
 
-	public void load(String language) {
-		Locale newLocale = null;
-		for (Locale tempLocale : Locale.getAvailableLocales()) {
-			if (tempLocale.getLanguage().equalsIgnoreCase(language)) {
-				newLocale = tempLocale;
-				break;
-			}
-		}
+    public void load(String language)
+    {
+        Locale newLocale = null;
+        for (Locale tempLocale : Locale.getAvailableLocales())
+        {
+            if (tempLocale.getLanguage().equalsIgnoreCase(language))
+            {
+                newLocale = tempLocale;
+                break;
+            }
+        }
 
-		if (newLocale != null) {
-			try {
-				languageResource = ResourceBundle.getBundle("lang.srm_" + language, newLocale); //NON-NLS
-				locale = newLocale;
-			} catch (MissingResourceException e) {
-				throw new IllegalArgumentException("Could not find file", e);
-			}
-		} else {
-			throw new IllegalArgumentException("Could not find locale");
-		}
-	}
+        if (newLocale != null)
+        {
+            try
+            {
+                languageResource = ResourceBundle.getBundle("lang.srm_" + language, newLocale); // NON-NLS
+                locale = newLocale;
+            }
+            catch (MissingResourceException e)
+            {
+                throw new IllegalArgumentException("Could not find file", e);
+            }
+        }
+        else
+        {
+            throw new IllegalArgumentException("Could not find locale");
+        }
+    }
 
-	public String getString(String s) {
-		try {
-			return languageResource.getString(s);
-		} catch (MissingResourceException e) {
-			SimpleRegionMarket
-					.getInstance()
-					.getLogger()
-					.warning(
-							String.format("language string %s doesnt exist in %s language file", s, //NON-NLS
-									locale.getLanguage()));
-			SimpleRegionMarket.getInstance().printError(e);
-			return s;
-		}
-	}
+    public String getString(String s)
+    {
+        try
+        {
+            return languageResource.getString(s);
+        }
+        catch (MissingResourceException e)
+        {
+            SimpleRegionMarket.getInstance().getLogger().warning(String.format("language string %s doesnt exist in %s language file", s, // NON-NLS
+                    locale.getLanguage()));
+            SimpleRegionMarket.getInstance().printError(e);
+            return s;
+        }
+    }
 }

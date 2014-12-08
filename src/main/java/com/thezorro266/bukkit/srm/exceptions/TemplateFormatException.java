@@ -23,18 +23,22 @@ package com.thezorro266.bukkit.srm.exceptions;
  * 
  * @author theZorro266
  */
-public class TemplateFormatException extends Exception {
-	private static final long serialVersionUID = 54537656279632141L;
+public class TemplateFormatException extends Exception
+{
+    private static final long serialVersionUID = 54537656279632141L;
 
-	public TemplateFormatException(String message) {
-		super(message);
-	}
+    public TemplateFormatException(String message)
+    {
+        super(message);
+    }
 
-	public TemplateFormatException(Throwable cause) {
-		super(cause);
-	}
+    public TemplateFormatException(Throwable cause)
+    {
+        super(cause);
+    }
 
-	public TemplateFormatException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public TemplateFormatException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
 }

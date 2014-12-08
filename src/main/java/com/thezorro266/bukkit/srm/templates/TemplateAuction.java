@@ -27,7 +27,7 @@ import com.thezorro266.bukkit.srm.templates.interfaces.TimedTemplate;
 public class TemplateAuction extends TemplateSell implements TimedTemplate {
 	public TemplateAuction(ConfigurationSection templateConfigSection) {
 		super(templateConfigSection);
-		type = "bid";
+		setType("bid");
 	}
 
 	@Override

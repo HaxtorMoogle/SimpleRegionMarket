@@ -28,163 +28,199 @@ import com.thezorro266.bukkit.srm.WorldGuardOwnable;
 import com.thezorro266.bukkit.srm.region.Region;
 import com.thezorro266.bukkit.srm.templates.interfaces.OwnableTemplate;
 
-public abstract class OwnableRegionTemplate extends SignTemplate implements OwnableTemplate {
-	public OwnableRegionTemplate(ConfigurationSection templateConfigSection) {
-		super(templateConfigSection);
-	}
+public abstract class OwnableRegionTemplate extends SignTemplate implements OwnableTemplate
+{
+    public OwnableRegionTemplate(ConfigurationSection templateConfigSection)
+    {
+        super(templateConfigSection);
+    }
 
-	@Override
-	public boolean isRegionOwner(OfflinePlayer player, Region region) {
-		WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-		return wgm.getOwnable(region).isPlayerOwner(wgm.wrapPlayer(player));
-	}
+    @Override
+    public boolean isRegionOwner(OfflinePlayer player, Region region)
+    {
+        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
+        return wgm.getOwnable(region).isPlayerOwner(wgm.wrapPlayer(player));
+    }
 
-	@Override
-	public boolean isRegionMember(OfflinePlayer player, Region region) {
-		WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-		return wgm.getOwnable(region).isPlayerMember(wgm.wrapPlayer(player));
-	}
+    @Override
+    public boolean isRegionMember(OfflinePlayer player, Region region)
+    {
+        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
+        return wgm.getOwnable(region).isPlayerMember(wgm.wrapPlayer(player));
+    }
 
-	@Override
-	public OfflinePlayer[] getRegionOwners(Region region) {
-		WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-		return wgm.getOwnable(region).getOwners();
-	}
+    @Override
+    public OfflinePlayer[] getRegionOwners(Region region)
+    {
+        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
+        return wgm.getOwnable(region).getOwners();
+    }
 
-	@Override
-	public OfflinePlayer[] getRegionMembers(Region region) {
-		WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-		return wgm.getOwnable(region).getMembers();
-	}
+    @Override
+    public OfflinePlayer[] getRegionMembers(Region region)
+    {
+        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
+        return wgm.getOwnable(region).getMembers();
+    }
 
-	@Override
-	public boolean setRegionOwners(Region region, OfflinePlayer[] owners) {
-		WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-		WorldGuardOwnable wgo = wgm.getOwnable(region);
+    @Override
+    public boolean setRegionOwners(Region region, OfflinePlayer[] owners)
+    {
+        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
+        WorldGuardOwnable wgo = wgm.getOwnable(region);
 
-		wgo.removeAllOwners();
-		for (OfflinePlayer player : owners) {
-			wgo.addOwner(wgm.wrapPlayer(player));
-		}
-		try{
-		    wgo.saveChanges();
-		    return true;
-                }
-		catch (StorageException e){
-		    // TODO Auto-generated catch block
-		    e.printStackTrace();
-		    return false;
-                }	
-	}
+        wgo.removeAllOwners();
+        for (OfflinePlayer player : owners)
+        {
+            wgo.addOwner(wgm.wrapPlayer(player));
+        }
+        try
+        {
+            wgo.saveChanges();
+            return true;
+        }
+        catch (StorageException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-	@Override
-	public boolean setRegionMembers(Region region, OfflinePlayer[] members) {
-		WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-		WorldGuardOwnable wgo = wgm.getOwnable(region);
+    @Override
+    public boolean setRegionMembers(Region region, OfflinePlayer[] members)
+    {
+        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
+        WorldGuardOwnable wgo = wgm.getOwnable(region);
 
-		wgo.removeAllMembers();
-		for (OfflinePlayer player : members) {
-			wgo.addMember(wgm.wrapPlayer(player));
-		}
+        wgo.removeAllMembers();
+        for (OfflinePlayer player : members)
+        {
+            wgo.addMember(wgm.wrapPlayer(player));
+        }
 
-		try{
-                    wgo.saveChanges();
-                    return true;
-		}catch (StorageException e){
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                    return false;
-                }
-	}
+        try
+        {
+            wgo.saveChanges();
+            return true;
+        }
+        catch (StorageException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-	@Override
-	public boolean addRegionOwner(Region region, OfflinePlayer player) {
-		WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-		WorldGuardOwnable wgo = wgm.getOwnable(region);
+    @Override
+    public boolean addRegionOwner(Region region, OfflinePlayer player)
+    {
+        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
+        WorldGuardOwnable wgo = wgm.getOwnable(region);
 
-		wgo.addOwner(wgm.wrapPlayer(player));
+        wgo.addOwner(wgm.wrapPlayer(player));
 
-		try{
-                    wgo.saveChanges();
-                    return true;
-                }catch (StorageException e){
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                    return false;
-                }
-	}
+        try
+        {
+            wgo.saveChanges();
+            return true;
+        }
+        catch (StorageException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-	@Override
-	public boolean addRegionMember(Region region, OfflinePlayer player) {
-		WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-		WorldGuardOwnable wgo = wgm.getOwnable(region);
+    @Override
+    public boolean addRegionMember(Region region, OfflinePlayer player)
+    {
+        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
+        WorldGuardOwnable wgo = wgm.getOwnable(region);
 
-		wgo.addMember(wgm.wrapPlayer(player));
+        wgo.addMember(wgm.wrapPlayer(player));
 
-		try{
-                    wgo.saveChanges();
-                    return true;
-		}catch (StorageException e){
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                    return false;
-                }
-	}
+        try
+        {
+            wgo.saveChanges();
+            return true;
+        }
+        catch (StorageException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-	@Override
-	public boolean removeRegionOwner(Region region, OfflinePlayer player) {
-		WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-		WorldGuardOwnable wgo = wgm.getOwnable(region);
+    @Override
+    public boolean removeRegionOwner(Region region, OfflinePlayer player)
+    {
+        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
+        WorldGuardOwnable wgo = wgm.getOwnable(region);
 
-		wgo.removeOwner(wgm.wrapPlayer(player));
+        wgo.removeOwner(wgm.wrapPlayer(player));
 
-		try{
-                    wgo.saveChanges();
-                    return true;
-                }catch (StorageException e){
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                    return false;
-                }
-	}
+        try
+        {
+            wgo.saveChanges();
+            return true;
+        }
+        catch (StorageException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-	@Override
-	public boolean removeRegionMember(Region region, OfflinePlayer player) {
-		WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-		WorldGuardOwnable wgo = wgm.getOwnable(region);
+    @Override
+    public boolean removeRegionMember(Region region, OfflinePlayer player)
+    {
+        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
+        WorldGuardOwnable wgo = wgm.getOwnable(region);
 
-		wgo.removeMember(wgm.wrapPlayer(player));
+        wgo.removeMember(wgm.wrapPlayer(player));
 
-		try{
-                        wgo.saveChanges();
-                        return true;
-                }catch (StorageException e){
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                        return false;
-                }
-	}
+        try
+        {
+            wgo.saveChanges();
+            return true;
+        }
+        catch (StorageException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-	@Override
-	public boolean clearRegion(Region region) {
-		return clearOwnershipOfRegion(region);
-	}
+    @Override
+    public boolean clearRegion(Region region)
+    {
+        return clearOwnershipOfRegion(region);
+    }
 
-	@Override
-	public boolean clearOwnershipOfRegion(Region region) {
-		WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-		WorldGuardOwnable wgo = wgm.getOwnable(region);
+    @Override
+    public boolean clearOwnershipOfRegion(Region region)
+    {
+        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
+        WorldGuardOwnable wgo = wgm.getOwnable(region);
 
-		wgo.removeAllMembers();
-		wgo.removeAllOwners();
+        wgo.removeAllMembers();
+        wgo.removeAllOwners();
 
-		try{
-                    wgo.saveChanges();
-                    return true;
-                }catch (StorageException e){
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                    return false;
-                }
-	}
+        try
+        {
+            wgo.saveChanges();
+            return true;
+        }
+        catch (StorageException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

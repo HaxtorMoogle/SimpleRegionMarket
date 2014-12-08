@@ -24,8 +24,6 @@ import java.util.List;
 
 import com.thezorro266.bukkit.srm.exceptions.NotEnoughPermissionsException;
 
-import lombok.Getter;
-
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -37,92 +35,121 @@ import com.thezorro266.bukkit.srm.factories.SignFactory.Sign;
 import com.thezorro266.bukkit.srm.helpers.Location;
 import com.thezorro266.bukkit.srm.region.Region;
 
-public abstract class Template {
-	public static final String ID_NONE = "none";
-	public static final String TYPE_UNKNOWN = "Unknown";
-	// TODO: Make options class
-	@Getter
-	protected String id = ID_NONE;
-	@Getter
-	protected String type = TYPE_UNKNOWN;
-	@Getter
-	protected final List<Region> regionList = new ArrayList<Region>();
+public abstract class Template
+{
+    public static final String ID_NONE = "none";
+    public static final String TYPE_UNKNOWN = "Unknown";
+    // TODO: Make options class
 
-	public Template(ConfigurationSection templateConfigSection) {
-		id = templateConfigSection.getName();
-		type = TYPE_UNKNOWN;
-	}
+    private String id = ID_NONE;
 
-	public static Template load(ConfigurationSection templateConfigSection) throws TemplateFormatException {
-		String id = templateConfigSection.getName();
-		if (templateConfigSection.isSet("type")) {
-			if (id.equals(ID_NONE)) {
-				throw new TemplateFormatException("Template using reserved id " + id);
-			}
+    private String type = TYPE_UNKNOWN;
 
-			String type = templateConfigSection.getString("type");
-			if (!type.contains(".")) {
-				type = "com.thezorro266.bukkit.srm.templates." + type;
-			}
-			Class<?> templateClass;
-			try {
-				templateClass = SimpleRegionMarket.class.getClassLoader().loadClass(type);
-			} catch (ClassNotFoundException e) {
-				throw new TemplateFormatException("Template class " + type + " on id " + id + " not found");
-			}
+    protected List<Region> regionList = new ArrayList<Region>();
 
-			Template template;
-			try {
-				template = Template.class.cast(templateClass.getConstructor(new Class[] { ConfigurationSection.class })
-						.newInstance(templateConfigSection));
-			} catch (IllegalArgumentException e) {
-				throw new TemplateFormatException("Template class " + type + " on id " + id + " is not valid", e);
-			} catch (IllegalAccessException e) {
-				throw new TemplateFormatException("Template class " + type + " on id " + id + " is not valid", e);
-			} catch (SecurityException e) {
-				throw new TemplateFormatException(e);
-			} catch (InstantiationException e) {
-				throw new TemplateFormatException("Template class " + type + " on id " + id + " is not valid", e);
-			} catch (InvocationTargetException e) {
-				throw new TemplateFormatException("Template class " + type + " on id " + id + " is not valid", e);
-			} catch (NoSuchMethodException e) {
-				throw new TemplateFormatException("Template class " + type + " on id " + id + " is not valid", e);
-			} catch (ClassCastException e) {
-				throw new TemplateFormatException("Template class " + type + " on id " + id + " is not valid", e);
-			}
+    public Template(ConfigurationSection templateConfigSection)
+    {
+        id = templateConfigSection.getName();
+        setType(TYPE_UNKNOWN);
+    }
 
-			return template;
-		} else {
-			throw new TemplateFormatException("No type defined on template " + id);
-		}
-	}
+    public static Template load(ConfigurationSection templateConfigSection) throws TemplateFormatException
+    {
+        String id = templateConfigSection.getName();
+        if (templateConfigSection.isSet("type"))
+        {
+            if (id.equals(ID_NONE))
+            {
+                throw new TemplateFormatException("Template using reserved id " + id);
+            }
 
-	@Override
-	public String toString() {
-		return id;
-	}
+            String type = templateConfigSection.getString("type");
+            if (!type.contains("."))
+            {
+                type = "com.thezorro266.bukkit.srm.templates." + type;
+            }
+            Class<?> templateClass;
+            try
+            {
+                templateClass = SimpleRegionMarket.class.getClassLoader().loadClass(type);
+            }
+            catch (ClassNotFoundException e)
+            {
+                throw new TemplateFormatException("Template class " + type + " on id " + id + " not found");
+            }
 
-	@Override
-	public boolean equals(Object other) {
-		if (other instanceof Template) {
-			if (this.getId().equals(((Template) other).getId())) {
-				return true;
-			}
-		}
-		return false;
-	}
+            Template template;
+            try
+            {
+                template = Template.class.cast(templateClass.getConstructor(new Class[] { ConfigurationSection.class }).newInstance(templateConfigSection));
+            }
+            catch (IllegalArgumentException e)
+            {
+                throw new TemplateFormatException("Template class " + type + " on id " + id + " is not valid", e);
+            }
+            catch (IllegalAccessException e)
+            {
+                throw new TemplateFormatException("Template class " + type + " on id " + id + " is not valid", e);
+            }
+            catch (SecurityException e)
+            {
+                throw new TemplateFormatException(e);
+            }
+            catch (InstantiationException e)
+            {
+                throw new TemplateFormatException("Template class " + type + " on id " + id + " is not valid", e);
+            }
+            catch (InvocationTargetException e)
+            {
+                throw new TemplateFormatException("Template class " + type + " on id " + id + " is not valid", e);
+            }
+            catch (NoSuchMethodException e)
+            {
+                throw new TemplateFormatException("Template class " + type + " on id " + id + " is not valid", e);
+            }
+            catch (ClassCastException e)
+            {
+                throw new TemplateFormatException("Template class " + type + " on id " + id + " is not valid", e);
+            }
 
-	abstract public void regionCommand(Region region, String cmd, CommandSender sender, String[] arguments) throws NotEnoughPermissionsException;
+            return template;
+        }
+        else
+        {
+            throw new TemplateFormatException("No type defined on template " + id);
+        }
+    }
 
-	abstract public boolean isSignApplicable(Location location, String[] lines);
+    @Override
+    public String toString()
+    {
+        return id;
+    }
 
-	abstract public boolean createSign(Player player, Block block, String[] lines);
+    @Override
+    public boolean equals(Object other)
+    {
+        if (other instanceof Template)
+        {
+            if (this.getId().equals(((Template) other).getId()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	abstract public boolean breakSign(Player player, Sign sign);
+    abstract public void regionCommand(Region region, String cmd, CommandSender sender, String[] arguments) throws NotEnoughPermissionsException;
 
-	abstract public void clickSign(Player player, Sign sign);
+    abstract public boolean isSignApplicable(Location location, String[] lines);
 
-	abstract public void updateSign(Sign sign);
+    abstract public boolean createSign(Player player, Block block, String[] lines);
+
+    abstract public boolean breakSign(Player player, Sign sign);
+
+    abstract public void clickSign(Player player, Sign sign);
+
+    abstract public void updateSign(Sign sign);
 
     public String getId()
     {
@@ -130,9 +157,19 @@ public abstract class Template {
         return id;
     }
 
-    public List<Region>  getRegionList()
+    public List<Region> getRegionList()
     {
         // TODO Auto-generated method stub
         return regionList;
+    }
+
+    public String getType()
+    {
+        return type;
+    }
+
+    public void setType(String type)
+    {
+        this.type = type;
     }
 }

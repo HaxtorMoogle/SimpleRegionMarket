@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import lombok.Getter;
-
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -22,17 +20,16 @@ import com.thezorro266.bukkit.srm.templates.Template;
 
 public class Region
 {
-    @Getter
-    final Template template;
-    @Getter
-    final World world;
-    @Getter
-    final ProtectedRegion worldguardRegion;
-    @Getter
-    ArrayList<Sign> signList;
 
-    @Getter
-    private final Options options;
+    private Template template;
+
+    private World world;
+
+    private ProtectedRegion worldguardRegion;
+
+    private ArrayList<Sign> signList;
+
+    private Options options;
 
     public Region(Template template, World world, ProtectedRegion worldguardRegion)
     {

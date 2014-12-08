@@ -18,129 +18,139 @@
 
 package com.thezorro266.bukkit.srm.factories;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import lombok.Getter;
-
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.thezorro266.bukkit.srm.SimpleRegionMarket;
 import com.thezorro266.bukkit.srm.exceptions.ContentLoadException;
 import com.thezorro266.bukkit.srm.factories.SignFactory.Sign;
 import com.thezorro266.bukkit.srm.helpers.Location;
-import com.thezorro266.bukkit.srm.helpers.Options;
 import com.thezorro266.bukkit.srm.region.Region;
-import com.thezorro266.bukkit.srm.templates.SignTemplate;
 import com.thezorro266.bukkit.srm.templates.Template;
 
-public class RegionFactory {
-	public static final RegionFactory instance = new RegionFactory();
-	@Getter
-	private int regionCount = 0;
+public class RegionFactory
+{
+    public static final RegionFactory instance = new RegionFactory();
 
-	RegionFactory() {
-	}
+    private int regionCount = 0;
 
-	public static ProtectedRegion getProtectedRegionFromLocation(Location loc, String region) {
-		ProtectedRegion protectedRegion = null;
-		final RegionManager worldRegionManager = SimpleRegionMarket.getInstance().getWorldGuardManager()
-				.getWG().getRegionManager(loc.getWorld());
-		if (region == null) {
-			ApplicableRegionSet regionSet = worldRegionManager.getApplicableRegions(loc.getBukkitLocation());
-			if (regionSet.size() == 1) {
-				protectedRegion = regionSet.iterator().next();
-			} else {
-				System.out.println("More than one region detected at " + loc.toString());
-				// TODO Take child region or region with highest priority
-			}
-		} else {
-			protectedRegion = worldRegionManager.getRegion(region);
-		}
-		return protectedRegion;
-	}
+    RegionFactory()
+    {
+    }
 
-	public Region createRegion(Template template, World world, ProtectedRegion worldguardRegion) {
-		Region region = new Region(template, world, worldguardRegion);
+    public static ProtectedRegion getProtectedRegionFromLocation(Location loc, String region)
+    {
+        ProtectedRegion protectedRegion = null;
+        final RegionManager worldRegionManager = SimpleRegionMarket.getInstance().getWorldGuardManager().getWG().getRegionManager(loc.getWorld());
+        if (region == null)
+        {
+            ApplicableRegionSet regionSet = worldRegionManager.getApplicableRegions(loc.getBukkitLocation());
+            if (regionSet.size() == 1)
+            {
+                protectedRegion = regionSet.iterator().next();
+            }
+            else
+            {
+                System.out.println("More than one region detected at " + loc.toString());
+                // TODO Take child region or region with highest priority
+            }
+        }
+        else
+        {
+            protectedRegion = worldRegionManager.getRegion(region);
+        }
+        return protectedRegion;
+    }
 
-		synchronized (template.getRegionList()) {
-			template.getRegionList().add(region);
-		}
-		SimpleRegionMarket.getInstance().getWorldHelper().putRegion(region, world);
+    public Region createRegion(Template template, World world, ProtectedRegion worldguardRegion)
+    {
+        Region region = new Region(template, world, worldguardRegion);
 
-		++regionCount;
+        synchronized (template.getRegionList())
+        {
+            template.getRegionList().add(region);
+        }
+        SimpleRegionMarket.getInstance().getWorldHelper().putRegion(region, world);
 
-		return region;
-	}
+        ++regionCount;
 
-	public void destroyRegion(Region region) {
-		{
-			Sign[] signArray = new Sign[region.getSignList().size()];
-			signArray = region.getSignList().toArray(signArray);
-			for (Sign sign : signArray) {
-				sign.clear();
-				SignFactory.instance.destroySign(sign);
-			}
-		}
+        return region;
+    }
 
-		synchronized (region.getTemplate().getRegionList()) {
-			region.getTemplate().getRegionList().remove(region);
-		}
+    public void destroyRegion(Region region)
+    {
+        {
+            Sign[] signArray = new Sign[region.getSignList().size()];
+            signArray = region.getSignList().toArray(signArray);
+            for (Sign sign : signArray)
+            {
+                sign.clear();
+                SignFactory.instance.destroySign(sign);
+            }
+        }
 
-		--regionCount;
-	}
+        synchronized (region.getTemplate().getRegionList())
+        {
+            region.getTemplate().getRegionList().remove(region);
+        }
 
-	public void loadFromConfiguration(Configuration config, String path) throws ContentLoadException {
-		Template template = SimpleRegionMarket.getInstance().getTemplateManager()
-				.getTemplateFromId(config.getString(path + "template_id"));
-		World world = Bukkit.getWorld(config.getString(path + "world"));
-		ProtectedRegion worldguardRegion = SimpleRegionMarket.getInstance().getWorldGuardManager()
-				.getProtectedRegion(world, config.getString(path + "worldguard_region"));
+        --regionCount;
+    }
 
-		Region region;
-		try {
-			region = createRegion(template, world, worldguardRegion);
-		} catch (IllegalArgumentException e) {
-			throw new ContentLoadException("Could not create region", e);
-		}
+    public void loadFromConfiguration(Configuration config, String path) throws ContentLoadException
+    {
+        Template template = SimpleRegionMarket.getInstance().getTemplateManager().getTemplateFromId(config.getString(path + "template_id"));
+        World world = Bukkit.getWorld(config.getString(path + "world"));
+        ProtectedRegion worldguardRegion = SimpleRegionMarket.getInstance().getWorldGuardManager().getProtectedRegion(world, config.getString(path + "worldguard_region"));
 
-		// Check if there are options
-		if (config.isSet(path + "options")) {
-			// Set region options from values from options path
-			Set<Entry<String, Object>> optionEntrySet = config.getConfigurationSection(path + "options")
-					.getValues(true).entrySet();
-			for (Entry<String, Object> optionEntry : optionEntrySet) {
-				if (!(optionEntry.getValue() instanceof ConfigurationSection)) {
-					region.getOptions().set(optionEntry.getKey(), optionEntry.getValue());
-				}
-			}
-		}
+        Region region;
+        try
+        {
+            region = createRegion(template, world, worldguardRegion);
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw new ContentLoadException("Could not create region", e);
+        }
 
-		ConfigurationSection signSection = config.getConfigurationSection(path + "signs");
-		if (signSection != null) {
-			for (String signKey : signSection.getKeys(false)) {
-				try {
-					SignFactory.instance.loadFromConfiguration(config, region,
-							path + String.format("signs.%s.", signKey));
-				} catch (IllegalArgumentException e) {
-					throw new ContentLoadException("Could not create sign " + signKey, e);
-				}
-			}
-		}
-	}
+        // Check if there are options
+        if (config.isSet(path + "options"))
+        {
+            // Set region options from values from options path
+            Set<Entry<String, Object>> optionEntrySet = config.getConfigurationSection(path + "options").getValues(true).entrySet();
+            for (Entry<String, Object> optionEntry : optionEntrySet)
+            {
+                if (!(optionEntry.getValue() instanceof ConfigurationSection))
+                {
+                    region.getOptions().set(optionEntry.getKey(), optionEntry.getValue());
+                }
+            }
+        }
 
-	
+        ConfigurationSection signSection = config.getConfigurationSection(path + "signs");
+        if (signSection != null)
+        {
+            for (String signKey : signSection.getKeys(false))
+            {
+                try
+                {
+                    SignFactory.instance.loadFromConfiguration(config, region, path + String.format("signs.%s.", signKey));
+                }
+                catch (IllegalArgumentException e)
+                {
+                    throw new ContentLoadException("Could not create sign " + signKey, e);
+                }
+            }
+        }
+    }
 
     public int getRegionCount()
     {

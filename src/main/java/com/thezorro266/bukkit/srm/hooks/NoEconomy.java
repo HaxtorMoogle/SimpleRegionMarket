@@ -18,24 +18,29 @@
 
 package com.thezorro266.bukkit.srm.hooks;
 
-public class NoEconomy extends Economy {
-	@Override
-	public boolean isValidAccount(String account) {
-		return true;
-	}
+public class NoEconomy extends Economy
+{
+    @Override
+    public boolean isValidAccount(String account)
+    {
+        return true;
+    }
 
-	@Override
-	public boolean hasEnough(String account, double money) {
-		return true;
-	}
+    @Override
+    public boolean hasEnough(String account, double money)
+    {
+        return true;
+    }
 
-	@Override
-	public boolean subtractMoney(String account, double money) {
-		return true;
-	}
+    @Override
+    public boolean subtractMoney(String account, double money)
+    {
+        return true;
+    }
 
-	@Override
-	public boolean addMoney(String account, double money) {
-		return true;
-	}
+    @Override
+    public boolean addMoney(String account, double money)
+    {
+        return true;
+    }
 }

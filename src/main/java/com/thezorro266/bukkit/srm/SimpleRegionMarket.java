@@ -34,182 +34,216 @@ import com.thezorro266.bukkit.srm.helpers.WorldHelper;
 import com.thezorro266.bukkit.srm.templates.Template;
 import com.thezorro266.bukkit.srm.templates.interfaces.TimedTemplate;
 
-public class SimpleRegionMarket extends JavaPlugin {
-	private static final boolean PRINT_STACKTRACE = false;
-	public static final String SRM_COMMAND = "regionmarket"; //NON-NLS
-	
-	private static SimpleRegionMarket instance = null;
-	
-	private final LocationSignHelper locationSignHelper;
-	
-	private final WorldHelper worldHelper;
-	
-	private final TemplateManager templateManager;
-	
-	private final WorldEditManager worldEditManager;
-	
-	private final WorldGuardManager worldGuardManager;
-	
-	private final PlayerManager playerManager;
-	
-	private Economy economy;
-	
-	private Permissions permissions;
-	private final VaultHook vaultHook;
-	private boolean loading = true;
-	private boolean disable = false;
+public class SimpleRegionMarket extends JavaPlugin
+{
+    private static final boolean PRINT_STACKTRACE = false;
+    public static final String SRM_COMMAND = "regionmarket"; // NON-NLS
 
-	public SimpleRegionMarket() {
-		super();
-		instance = this;
-		locationSignHelper = new LocationSignHelper();
-		worldHelper = new WorldHelper();
-		templateManager = new TemplateManager();
-		worldEditManager = new WorldEditManager();
-		worldGuardManager = new WorldGuardManager();
-		vaultHook = new VaultHook();
-		playerManager = new PlayerManager();
-	}
+    private static SimpleRegionMarket instance = null;
 
-	public static String getCopyright() {
-		return "(c) 2013-2014  theZorro266 and SRM Team"; //NON-NLS
-	}
+    private final LocationSignHelper locationSignHelper;
 
-	@Override
-	public void onDisable() {
-		instance = null;
-	}
+    private final WorldHelper worldHelper;
 
-	@Override
-	public void onLoad() {
-		Utils.TimeMeasurement tm = new Utils.TimeMeasurement();
-		{
-			try {
-				templateManager.load();
-			} catch (TemplateFormatException e) {
-				except(e);
-				return;
-			} catch (IOException e) {
-				except(e);
-				return;
-			}
-		}
-		int templateCount;
-		synchronized (templateManager.getTemplateList()) {
-			templateCount = templateManager.getTemplateList().size();
-		}
-		getLogger().info(
-				MessageFormat.format(LanguageSupport.instance.getString("template.load.report"), templateCount,
-						tm.diff()));
-	}
+    private final TemplateManager templateManager;
 
-	@Override
-	public void onEnable() {
-		if (!disable) {
-			// Try to load dependencies
-			try {
-				vaultHook.load();
-				worldGuardManager.load();
-				worldEditManager.load();
-			} catch (NullPointerException e) {
-				except(e);
-			}
-		}
+    private final WorldEditManager worldEditManager;
 
-		// Check if the plugin should be disabled because of an exception
-		if (disable) {
-			getPluginLoader().disablePlugin(this);
-			return;
-		}
-		loading = false;
+    private final WorldGuardManager worldGuardManager;
 
-		// TODO: permissions = new <insert permissions class with list support here>();
-		if (vaultHook.isVaultEnabled()) {
-			economy = new VaultEconomy();
-			if (permissions == null) {
-				permissions = new VaultPermissions();
-			}
-		}
-		if (permissions == null) {
-			permissions = new BasicPermissions();
-		}
-		if (economy == null) {
-			economy = new NoEconomy();
-		}
+    private final PlayerManager playerManager;
 
-		// Load regions in templates
-		Utils.TimeMeasurement tm = new Utils.TimeMeasurement();
-		{
-			try {
-				templateManager.loadContent();
-			} catch (ContentLoadException e) {
-				except(e);
-			}
-		}
+    private Economy economy;
 
-		getLogger().info(
-			MessageFormat.format(LanguageSupport.instance.getString("region.load.report"),
-					RegionFactory.instance.getRegionCount(), tm.diff()));
+    private Permissions permissions;
+    private final VaultHook vaultHook;
+    private boolean loading = true;
+    private boolean disable = false;
 
-		// Register events
-		playerManager.registerEvents();
-		new EventListener();
+    public SimpleRegionMarket()
+    {
+        super();
+        instance = this;
+        locationSignHelper = new LocationSignHelper();
+        worldHelper = new WorldHelper();
+        templateManager = new TemplateManager();
+        worldEditManager = new WorldEditManager();
+        worldGuardManager = new WorldGuardManager();
+        vaultHook = new VaultHook();
+        playerManager = new PlayerManager();
+    }
 
-		// Set command executor
-		getCommand(SRM_COMMAND).setExecutor(new CommandHandler());
+    public static String getCopyright()
+    {
+        return "(c) 2013-2014  theZorro266 and SRM Team"; // NON-NLS
+    }
 
-		// Set up async timer
-		getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
-			@Override
-			public void run() {
-				Utils.TimeMeasurement tm = new Utils.TimeMeasurement();
-				{
-					synchronized (templateManager.getTemplateList()) {
-						for (Template template : templateManager.getTemplateList()) {
-							if (template instanceof TimedTemplate) {
-								((TimedTemplate) template).schedule();
-							}
-						}
-					}
-				}
-				getLogger().log(Level.FINEST,
-						MessageFormat.format(LanguageSupport.instance.getString("schedule.report"), tm.diff()));
-			}
-		}, 1200L, 1200L);
-	}
+    @Override
+    public void onDisable()
+    {
+        instance = null;
+    }
 
-	private void except(Throwable t) {
-		disable = true;
-		getLogger().severe(LanguageSupport.instance.getString("plugin.problem.unload"));
-		printError(t);
+    @Override
+    public void onLoad()
+    {
+        Utils.TimeMeasurement tm = new Utils.TimeMeasurement();
+        {
+            try
+            {
+                templateManager.load();
+            }
+            catch (TemplateFormatException e)
+            {
+                except(e);
+                return;
+            }
+            catch (IOException e)
+            {
+                except(e);
+                return;
+            }
+        }
+        int templateCount;
+        synchronized (templateManager.getTemplateList())
+        {
+            templateCount = templateManager.getTemplateList().size();
+        }
+        getLogger().info(MessageFormat.format(LanguageSupport.instance.getString("template.load.report"), templateCount, tm.diff()));
+    }
 
-		if (!loading) {
-			getPluginLoader().disablePlugin(this);
-		}
-	}
+    @Override
+    public void onEnable()
+    {
+        if (!disable)
+        {
+            // Try to load dependencies
+            try
+            {
+                vaultHook.load();
+                worldGuardManager.load();
+                worldEditManager.load();
+            }
+            catch (NullPointerException e)
+            {
+                except(e);
+            }
+        }
 
-	public void printError(Throwable t) {
-		if (PRINT_STACKTRACE) {
-			t.printStackTrace();
-		} else {
-			getLogger().severe(t.toString());
-			for (StackTraceElement element : t.getStackTrace()) {
-				getLogger().severe("  " + element.toString());
-			}
+        // Check if the plugin should be disabled because of an exception
+        if (disable)
+        {
+            getPluginLoader().disablePlugin(this);
+            return;
+        }
+        loading = false;
 
-			Throwable cause = t.getCause();
-			if (cause != null) {
-				getLogger().severe("=== Caused by:"); //NON-NLS
-				printError(cause);
-			}
-		}
-	}
+        // TODO: permissions = new <insert permissions class with list support
+        // here>();
+        if (vaultHook.isVaultEnabled())
+        {
+            economy = new VaultEconomy();
+            if (permissions == null)
+            {
+                permissions = new VaultPermissions();
+            }
+        }
+        if (permissions == null)
+        {
+            permissions = new BasicPermissions();
+        }
+        if (economy == null)
+        {
+            economy = new NoEconomy();
+        }
+
+        // Load regions in templates
+        Utils.TimeMeasurement tm = new Utils.TimeMeasurement();
+        {
+            try
+            {
+                templateManager.loadContent();
+            }
+            catch (ContentLoadException e)
+            {
+                except(e);
+            }
+        }
+
+        getLogger().info(MessageFormat.format(LanguageSupport.instance.getString("region.load.report"), RegionFactory.instance.getRegionCount(), tm.diff()));
+
+        // Register events
+        playerManager.registerEvents();
+        new EventListener();
+
+        // Set command executor
+        getCommand(SRM_COMMAND).setExecutor(new CommandHandler());
+
+        // Set up async timer
+        getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                Utils.TimeMeasurement tm = new Utils.TimeMeasurement();
+                {
+                    synchronized (templateManager.getTemplateList())
+                    {
+                        for (Template template : templateManager.getTemplateList())
+                        {
+                            if (template instanceof TimedTemplate)
+                            {
+                                ((TimedTemplate) template).schedule();
+                            }
+                        }
+                    }
+                }
+                getLogger().log(Level.FINEST, MessageFormat.format(LanguageSupport.instance.getString("schedule.report"), tm.diff()));
+            }
+        }, 1200L, 1200L);
+    }
+
+    private void except(Throwable t)
+    {
+        disable = true;
+        getLogger().severe(LanguageSupport.instance.getString("plugin.problem.unload"));
+        printError(t);
+
+        if (!loading)
+        {
+            getPluginLoader().disablePlugin(this);
+        }
+    }
+
+    public void printError(Throwable t)
+    {
+        if (PRINT_STACKTRACE)
+        {
+            t.printStackTrace();
+        }
+        else
+        {
+            getLogger().severe(t.toString());
+            for (StackTraceElement element : t.getStackTrace())
+            {
+                getLogger().severe("  " + element.toString());
+            }
+
+            Throwable cause = t.getCause();
+            if (cause != null)
+            {
+                getLogger().severe("=== Caused by:"); // NON-NLS
+                printError(cause);
+            }
+        }
+    }
 
     public static SimpleRegionMarket getInstance()
     {
         // TODO Auto-generated method stub
         return instance;
     }
+
     public Economy getEconomy()
     {
         return economy;
@@ -227,13 +261,13 @@ public class SimpleRegionMarket extends JavaPlugin {
         return worldHelper;
     }
 
-    public  WorldEditManager getWorldEditManager()
+    public WorldEditManager getWorldEditManager()
     {
         // TODO Auto-generated method stub
         return worldEditManager;
     }
 
-    public  WorldGuardManager getWorldGuardManager()
+    public WorldGuardManager getWorldGuardManager()
     {
         // TODO Auto-generated method stub
         return worldGuardManager;
