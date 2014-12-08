@@ -24,6 +24,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.thezorro266.bukkit.srm.SimpleRegionMarket;
 import com.thezorro266.bukkit.srm.WorldGuardManager;
+import com.thezorro266.bukkit.srm.WorldGuardOwnable;
 import com.thezorro266.bukkit.srm.factories.RegionFactory;
 import com.thezorro266.bukkit.srm.templates.interfaces.OwnableTemplate;
 
@@ -59,7 +60,7 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
 	@Override
 	public boolean setRegionOwners(RegionFactory.Region region, OfflinePlayer[] owners) {
 		WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-		WorldGuardManager.WorldGuardOwnable wgo = wgm.getOwnable(region);
+		WorldGuardOwnable wgo = wgm.getOwnable(region);
 
 		wgo.removeAllOwners();
 		for (OfflinePlayer player : owners) {
@@ -79,7 +80,7 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
 	@Override
 	public boolean setRegionMembers(RegionFactory.Region region, OfflinePlayer[] members) {
 		WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-		WorldGuardManager.WorldGuardOwnable wgo = wgm.getOwnable(region);
+		WorldGuardOwnable wgo = wgm.getOwnable(region);
 
 		wgo.removeAllMembers();
 		for (OfflinePlayer player : members) {
@@ -99,7 +100,7 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
 	@Override
 	public boolean addRegionOwner(RegionFactory.Region region, OfflinePlayer player) {
 		WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-		WorldGuardManager.WorldGuardOwnable wgo = wgm.getOwnable(region);
+		WorldGuardOwnable wgo = wgm.getOwnable(region);
 
 		wgo.addOwner(wgm.wrapPlayer(player));
 
@@ -116,7 +117,7 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
 	@Override
 	public boolean addRegionMember(RegionFactory.Region region, OfflinePlayer player) {
 		WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-		WorldGuardManager.WorldGuardOwnable wgo = wgm.getOwnable(region);
+		WorldGuardOwnable wgo = wgm.getOwnable(region);
 
 		wgo.addMember(wgm.wrapPlayer(player));
 
@@ -133,7 +134,7 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
 	@Override
 	public boolean removeRegionOwner(RegionFactory.Region region, OfflinePlayer player) {
 		WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-		WorldGuardManager.WorldGuardOwnable wgo = wgm.getOwnable(region);
+		WorldGuardOwnable wgo = wgm.getOwnable(region);
 
 		wgo.removeOwner(wgm.wrapPlayer(player));
 
@@ -150,7 +151,7 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
 	@Override
 	public boolean removeRegionMember(RegionFactory.Region region, OfflinePlayer player) {
 		WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-		WorldGuardManager.WorldGuardOwnable wgo = wgm.getOwnable(region);
+		WorldGuardOwnable wgo = wgm.getOwnable(region);
 
 		wgo.removeMember(wgm.wrapPlayer(player));
 
@@ -172,7 +173,7 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
 	@Override
 	public boolean clearOwnershipOfRegion(RegionFactory.Region region) {
 		WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-		WorldGuardManager.WorldGuardOwnable wgo = wgm.getOwnable(region);
+		WorldGuardOwnable wgo = wgm.getOwnable(region);
 
 		wgo.removeAllMembers();
 		wgo.removeAllOwners();
