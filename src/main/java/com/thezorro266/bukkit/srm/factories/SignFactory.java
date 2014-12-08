@@ -189,7 +189,6 @@ public class SignFactory {
 			}
 		}
 
-		@SuppressWarnings("HardCodedStringLiteral")
 		@Override
 		public String toString() {
 			return String.format("Sign[r:%s,l:%s]", region.getName(), location);

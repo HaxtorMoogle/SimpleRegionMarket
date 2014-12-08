@@ -194,7 +194,6 @@ public class TemplateManager {
 		load();
 	}
 
-	@SuppressWarnings("HardCodedStringLiteral")
 	private void update(File templateFile, YamlConfiguration templateYaml) throws TemplateFormatException, IOException {
 
 		// Old

@@ -43,7 +43,6 @@ import com.thezorro266.bukkit.srm.helpers.Location;
 import com.thezorro266.bukkit.srm.helpers.Options;
 import com.thezorro266.bukkit.srm.templates.SignTemplate;
 import com.thezorro266.bukkit.srm.templates.Template;
-import com.thezorro266.bukkit.srm.templates.TemplateSell;
 
 public class RegionFactory {
 	public static final RegionFactory instance = new RegionFactory();
@@ -56,7 +55,7 @@ public class RegionFactory {
 	public static ProtectedRegion getProtectedRegionFromLocation(Location loc, String region) {
 		ProtectedRegion protectedRegion = null;
 		final RegionManager worldRegionManager = SimpleRegionMarket.getInstance().getWorldGuardManager()
-				.getWorldGuard().getRegionManager(loc.getWorld());
+				.getWG().getRegionManager(loc.getWorld());
 		if (region == null) {
 			ApplicableRegionSet regionSet = worldRegionManager.getApplicableRegions(loc.getBukkitLocation());
 			if (regionSet.size() == 1) {
@@ -251,7 +250,6 @@ public class RegionFactory {
 			}
 		}
 
-		@SuppressWarnings("HardCodedStringLiteral")
 		@Override
 		public String toString() {
 			return String.format("Region[%s,w:%s,t:%s]", getName(), world.getName(), template.toString());

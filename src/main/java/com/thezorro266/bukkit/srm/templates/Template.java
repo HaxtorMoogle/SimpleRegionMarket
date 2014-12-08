@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.thezorro266.bukkit.srm.exceptions.NotEnoughPermissionsException;
-import com.thezorro266.bukkit.srm.factories.RegionFactory;
-
 import lombok.Getter;
 
 import org.bukkit.block.Block;

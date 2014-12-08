@@ -21,7 +21,6 @@ package com.thezorro266.bukkit.srm;
 /**
  * Class with several util functions.
  */
-@SuppressWarnings("HardCodedStringLiteral")
 public class Utils {
 	/**
 	 * Generates a string, which represents the time left until the given time.

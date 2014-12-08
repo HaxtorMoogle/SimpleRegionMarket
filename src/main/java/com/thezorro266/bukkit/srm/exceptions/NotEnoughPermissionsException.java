@@ -4,7 +4,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class NotEnoughPermissionsException extends Exception {
-	private CommandSender sender;
+    /**
+     *  No idea why this is needed but ok
+     */
+    private static final long serialVersionUID = 7800509822995527695L;
+    private CommandSender sender;
 	private String permNode;
 
 	public CommandSender getCommandSender() {

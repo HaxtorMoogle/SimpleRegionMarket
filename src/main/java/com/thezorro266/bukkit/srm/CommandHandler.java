@@ -29,14 +29,12 @@ import org.bukkit.entity.Player;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
 public class CommandHandler implements CommandExecutor {
-	private Logger logger;
 	private Permissions permissions;
 
 	public CommandHandler() {
-		this.logger = SimpleRegionMarket.getInstance().getLogger();
+		SimpleRegionMarket.getInstance().getLogger();
 		this.permissions = SimpleRegionMarket.getInstance().getPermissions();
 	}
 

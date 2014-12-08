@@ -86,7 +86,6 @@ class Location {
 		config.set(path + "z", z);
 	}
 
-	@SuppressWarnings("HardCodedStringLiteral")
 	@Override
 	public String toString() {
 		return String.format("Location[w:%s,c:(%d,%d,%d)]", world.getName(), x, y, z);

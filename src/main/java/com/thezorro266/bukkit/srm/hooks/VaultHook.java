@@ -19,7 +19,6 @@
 package com.thezorro266.bukkit.srm.hooks;
 
 import com.thezorro266.bukkit.srm.LanguageSupport;
-import com.thezorro266.bukkit.srm.SimpleRegionMarket;
 import net.milkbowl.vault.Vault;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;

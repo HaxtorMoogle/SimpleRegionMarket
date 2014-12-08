@@ -1,7 +1,7 @@
 /*
- * SimpleRegionMarket
- * Copyright (C) 2014  theZorro266 <http://www.thezorro266.com>
- *
+ * SimpleRegionMarket 
+ * was Copyright (C) 2014  theZorro266 <http://www.thezorro266.com>
+ * Now is By HaxtorMoogle (C) 2014 I don forked your shit
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,6 +30,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.UnknownDependencyException;
 
+import com.moogle.MoogleGenericException;
 import com.sk89q.wepif.PermissionsResolverManager;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.LocalPlayer;
@@ -39,229 +40,312 @@ import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.thezorro266.bukkit.srm.factories.RegionFactory;
 
-public class WorldGuardManager {
-	private static final String WORLD_GUARD_PLUGIN_NAME = "WorldGuard"; // NON-NLS
-	private WorldGuardPlugin worldguardPlugin;
-	private WeakHashMap<RegionFactory.Region, WeakReference<WorldGuardOwnable>> ownableMap = new WeakHashMap<RegionFactory.Region, WeakReference<WorldGuardOwnable>>();
+public class WorldGuardManager
+{
 
-	public WorldGuardOwnable getOwnable(RegionFactory.Region region) {
-		WorldGuardOwnable wgo;
-		if (ownableMap.containsKey(region)) {
-			WeakReference<WorldGuardOwnable> wr = ownableMap.get(region);
-			wgo = wr.get();
-			if (wgo != null) {
-				return wgo;
-			}
-		}
+    private WorldGuardPlugin worldguardPlugin;
+    private WeakHashMap<RegionFactory.Region, WeakReference<WorldGuardOwnable>> ownableMap = new WeakHashMap<RegionFactory.Region, WeakReference<WorldGuardOwnable>>();
 
-		wgo = new WorldGuardOwnable(region);
-		ownableMap.put(region, new WeakReference<WorldGuardOwnable>(wgo));
-		return wgo;
-	}
+    public WorldGuardOwnable getOwnable(RegionFactory.Region region)
+    {
+        WorldGuardOwnable wgo;
+        if (ownableMap.containsKey(region))
+        {
+            WeakReference<WorldGuardOwnable> wr = ownableMap.get(region);
+            wgo = wr.get();
+            if (wgo != null)
+            {
+                return wgo;
+            }
+        }
 
-	public void load() {
-		Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin(WORLD_GUARD_PLUGIN_NAME);
+        wgo = new WorldGuardOwnable(region);
+        ownableMap.put(region, new WeakReference<WorldGuardOwnable>(wgo));
+        return wgo;
+    }
+    public WorldGuardManager ()
+    {
+        
+    }
 
-		if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
-			throw new UnknownDependencyException(LanguageSupport.instance.getString("worldguard.notloaded"));
-		} else {
-			worldguardPlugin = (WorldGuardPlugin) plugin;
-		}
-	}
+    public void load()
+    {
+        try
+        {
+            this.getWorldGuard();
+        }
+        catch (MoogleGenericException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
-	public WorldGuardPlugin getWorldGuard() {
-		return worldguardPlugin;
-	}
+    public WorldGuardPlugin getWG()
+    {
+        return worldguardPlugin;
+    }
 
-	public ProtectedRegion getProtectedRegion(World world, String region) {
-		if (world != null) {
-			return worldguardPlugin.getRegionManager(world).getRegion(region);
-		}
-		return null;
-	}
+    /**
+     * Gets a copy of the WorldGuard plugin.
+     * 
+     * @return
+     * @throws MoogleGenericException
+     */
+    private WorldGuardPlugin getWorldGuard() throws MoogleGenericException
+    {
+        Plugin worldGuard = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
 
-	public LocalPlayer wrapPlayer(OfflinePlayer player) {
-		if (player != null) {
-			return new WorldGuardPlayer(player);
-		}
-		return null;
-	}
+        // WorldGuard may not be loaded
+        if (worldGuard == null || !(worldGuard instanceof WorldGuardPlugin))
+        {
+            throw new MoogleGenericException("WorldGuard does not appear to be installed.");
+        }
+        if (worldGuard instanceof WorldGuardPlugin)
+        {
+            return (WorldGuardPlugin) worldGuard;
+        }
+        else
+        {
+            throw new MoogleGenericException("WorldGuard detection failed (report error).");
+        }
 
-	public LocalPlayer wrapPlayer(Player player) {
-		if (player != null) {
-			return worldguardPlugin.wrapPlayer(player);
-		}
-		return null;
-	}
+    }
 
-	public class WorldGuardOwnable {
-		private World world;
-		private DefaultDomain owners;
-		private DefaultDomain members;
+    public ProtectedRegion getProtectedRegion(World world, String region)
+    {
+        if (world != null)
+        {
+            return worldguardPlugin.getRegionManager(world).getRegion(region);
+        }
+        return null;
+    }
 
-		private WorldGuardOwnable(RegionFactory.Region region) {
-			this.world = region.getWorld();
-			this.owners = region.getWorldguardRegion().getOwners();
-			this.members = region.getWorldguardRegion().getMembers();
-		}
+    public LocalPlayer wrapPlayer(OfflinePlayer player)
+    {
+        if (player != null)
+        {
+            return new WorldGuardPlayer(player);
+        }
+        return null;
+    }
 
-		public void addMember(LocalPlayer localPlayer) {
-			members.addPlayer(localPlayer);
-		}
+    public LocalPlayer wrapPlayer(Player player)
+    {
+        if (player != null)
+        {
+            return worldguardPlugin.wrapPlayer(player);
+        }
+        return null;
+    }
 
-		public void addMemberGroup(String group) {
-			members.addGroup(group);
-		}
+    public class WorldGuardOwnable
+    {
+        private World world;
+        private DefaultDomain owners;
+        private DefaultDomain members;
 
-		public void addOwner(LocalPlayer localPlayer) {
-			owners.addPlayer(localPlayer);
-		}
+        private WorldGuardOwnable(RegionFactory.Region region)
+        {
+            this.world = region.getWorld();
+            this.owners = region.getWorldguardRegion().getOwners();
+            this.members = region.getWorldguardRegion().getMembers();
+        }
 
-		public void addOwnerGroup(String group) {
-			owners.addGroup(group);
-		}
+        public void addMember(LocalPlayer localPlayer)
+        {
+            members.addPlayer(localPlayer);
+        }
 
-		public void removeMember(LocalPlayer localPlayer) {
-			members.removePlayer(localPlayer);
-		}
+        public void addMemberGroup(String group)
+        {
+            members.addGroup(group);
+        }
 
-		public void removeMemberGroup(String group) {
-			members.removeGroup(group);
-		}
+        public void addOwner(LocalPlayer localPlayer)
+        {
+            owners.addPlayer(localPlayer);
+        }
 
-		public void removeOwner(LocalPlayer localPlayer) {
-			owners.removePlayer(localPlayer);
-		}
+        public void addOwnerGroup(String group)
+        {
+            owners.addGroup(group);
+        }
 
-		public void removeOwnerGroup(String group) {
-			owners.removeGroup(group);
-		}
+        public void removeMember(LocalPlayer localPlayer)
+        {
+            members.removePlayer(localPlayer);
+        }
 
-		public void removeAllMembers() {
-			members.removeAll();
-		}
+        public void removeMemberGroup(String group)
+        {
+            members.removeGroup(group);
+        }
 
-		public void removeAllOwners() {
-			owners.removeAll();
-		}
+        public void removeOwner(LocalPlayer localPlayer)
+        {
+            owners.removePlayer(localPlayer);
+        }
 
-		public boolean isPlayerMember(LocalPlayer localPlayer) {
-			return members.contains(localPlayer);
-		}
+        public void removeOwnerGroup(String group)
+        {
+            owners.removeGroup(group);
+        }
 
-		public boolean isPlayerOwner(LocalPlayer localPlayer) {
-			return owners.contains(localPlayer);
-		}
+        public void removeAllMembers()
+        {
+            members.removeAll();
+        }
 
-		public OfflinePlayer[] getMembers() {
-			OfflinePlayer[] list;
-			Set<String> playerSet = members.getPlayers();
-			list = new OfflinePlayer[playerSet.size()];
-			int index = 0;
-			for (String playerName : playerSet) {
-				list[index] = Bukkit.getOfflinePlayer(playerName);
-				++index;
-			}
-			return list;
-		}
+        public void removeAllOwners()
+        {
+            owners.removeAll();
+        }
 
-		public OfflinePlayer[] getOwners() {
-			OfflinePlayer[] list;
-			Set<String> playerSet = owners.getPlayers();
-			list = new OfflinePlayer[playerSet.size()];
-			int index = 0;
-			for (String playerName : playerSet) {
-				list[index] = Bukkit.getOfflinePlayer(playerName);
-				++index;
-			}
-			return list;
-		}
+        public boolean isPlayerMember(LocalPlayer localPlayer)
+        {
+            return members.contains(localPlayer);
+        }
 
-		public void saveChanges() throws StorageException {
-			worldguardPlugin.getRegionManager(world).save();
-		}
-	}
+        public boolean isPlayerOwner(LocalPlayer localPlayer)
+        {
+            return owners.contains(localPlayer);
+        }
 
-	public class WorldGuardPlayer extends LocalPlayer {
-		private OfflinePlayer player;
+        public OfflinePlayer[] getMembers()
+        {
+            OfflinePlayer[] list;
+            Set<String> playerSet = members.getPlayers();
+            list = new OfflinePlayer[playerSet.size()];
+            int index = 0;
+            for (String playerName : playerSet)
+            {
+                list[index] = Bukkit.getOfflinePlayer(playerName);
+                ++index;
+            }
+            return list;
+        }
 
-		private WorldGuardPlayer(OfflinePlayer player) {
-			if (player == null) {
-				throw new IllegalArgumentException("Player must not be null");
-			}
+        public OfflinePlayer[] getOwners()
+        {
+            OfflinePlayer[] list;
+            Set<String> playerSet = owners.getPlayers();
+            list = new OfflinePlayer[playerSet.size()];
+            int index = 0;
+            for (String playerName : playerSet)
+            {
+                list[index] = Bukkit.getOfflinePlayer(playerName);
+                ++index;
+            }
+            return list;
+        }
 
-			this.player = player;
-		}
+        public void saveChanges() throws StorageException
+        {
+            worldguardPlugin.getRegionManager(world).save();
+        }
+    }
 
-		@Override
-		public String getName() {
-			return player.getName();
-		}
+    public class WorldGuardPlayer extends LocalPlayer
+    {
+        private OfflinePlayer player;
 
-		@Override
-		public boolean hasGroup(String group) {
-			return PermissionsResolverManager.getInstance().inGroup(player, group);
-		}
+        private WorldGuardPlayer(OfflinePlayer player)
+        {
+            if (player == null)
+            {
+                throw new IllegalArgumentException("Player must not be null");
+            }
 
-		@Override
-		public Vector getPosition() {
-			if (player.isOnline()) {
-				org.bukkit.Location loc = player.getPlayer().getLocation();
-				return new Vector(loc.getX(), loc.getY(), loc.getZ());
-			} else {
-				SimpleRegionMarket.getInstance().getLogger()
-						.warning(LanguageSupport.instance.getString("worldguard.offlineplayer.getposition"));
-				return new Vector(0, 0, 0);
-			}
-		}
+            this.player = player;
+        }
 
-		@Override
-		public void kick(String msg) {
-			if (player.isOnline()) {
-				player.getPlayer().kickPlayer(msg);
-			} else {
-				SimpleRegionMarket.getInstance().getLogger()
-						.warning(LanguageSupport.instance.getString("worldguard.offlineplayer.kick"));
-			}
-		}
+        @Override
+        public String getName()
+        {
+            return player.getName();
+        }
 
-		@Override
-		public void ban(String msg) {
-			if (player.isOnline()) {
-				player.getPlayer().setBanned(true);
-				player.getPlayer().kickPlayer(msg);
-			} else {
-				SimpleRegionMarket.getInstance().getLogger()
-						.warning(LanguageSupport.instance.getString("worldguard.offlineplayer.ban"));
-			}
-		}
+        @Override
+        public boolean hasGroup(String group)
+        {
+            return PermissionsResolverManager.getInstance().inGroup(player, group);
+        }
 
-		@Override
-		public void printRaw(String msg) {
-			if (player.isOnline()) {
-				player.getPlayer().sendMessage(msg);
-			} else {
-				SimpleRegionMarket.getInstance().getLogger()
-						.warning(LanguageSupport.instance.getString("worldguard.offlineplayer.message"));
-			}
-		}
+        @Override
+        public Vector getPosition()
+        {
+            if (player.isOnline())
+            {
+                org.bukkit.Location loc = player.getPlayer().getLocation();
+                return new Vector(loc.getX(), loc.getY(), loc.getZ());
+            }
+            else
+            {
+                SimpleRegionMarket.getInstance().getLogger().warning(LanguageSupport.instance.getString("worldguard.offlineplayer.getposition"));
+                return new Vector(0, 0, 0);
+            }
+        }
 
-		@Override
-		public String[] getGroups() {
-			return PermissionsResolverManager.getInstance().getGroups(player);
-		}
+        @Override
+        public void kick(String msg)
+        {
+            if (player.isOnline())
+            {
+                player.getPlayer().kickPlayer(msg);
+            }
+            else
+            {
+                SimpleRegionMarket.getInstance().getLogger().warning(LanguageSupport.instance.getString("worldguard.offlineplayer.kick"));
+            }
+        }
 
-		@Override
-		public boolean hasPermission(String perm) {
-			if (player.isOnline()) {
-				return SimpleRegionMarket.getInstance().getWorldGuardManager().getWorldGuard()
-						.hasPermission(player.getPlayer(), perm);
-			} else {
-				SimpleRegionMarket.getInstance().getLogger()
-						.warning(LanguageSupport.instance.getString("worldguard.offlineplayer.getpermission"));
-				return true;
-			}
-		}
+        @Override
+        public void ban(String msg)
+        {
+            if (player.isOnline())
+            {
+                player.getPlayer().setBanned(true);
+                player.getPlayer().kickPlayer(msg);
+            }
+            else
+            {
+                SimpleRegionMarket.getInstance().getLogger().warning(LanguageSupport.instance.getString("worldguard.offlineplayer.ban"));
+            }
+        }
+
+        @Override
+        public void printRaw(String msg)
+        {
+            if (player.isOnline())
+            {
+                player.getPlayer().sendMessage(msg);
+            }
+            else
+            {
+                SimpleRegionMarket.getInstance().getLogger().warning(LanguageSupport.instance.getString("worldguard.offlineplayer.message"));
+            }
+        }
+
+        @Override
+        public String[] getGroups()
+        {
+            return PermissionsResolverManager.getInstance().getGroups(player);
+        }
+
+        @Override
+        public boolean hasPermission(String perm)
+        {
+            if (player.isOnline())
+            {
+                return SimpleRegionMarket.getInstance().getWorldGuardManager().getWG().hasPermission(player.getPlayer(), perm);
+            }
+            else
+            {
+                SimpleRegionMarket.getInstance().getLogger().warning(LanguageSupport.instance.getString("worldguard.offlineplayer.getpermission"));
+                return true;
+            }
+        }
 
         @Override
         public UUID getUniqueId()
@@ -270,6 +354,5 @@ public class WorldGuardManager {
             return player.getUniqueId();
         }
 
-
-	}
+    }
 }
