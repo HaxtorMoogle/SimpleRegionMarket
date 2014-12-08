@@ -22,9 +22,10 @@ import com.thezorro266.bukkit.srm.LanguageSupport;
 import com.thezorro266.bukkit.srm.SimpleRegionMarket;
 import com.thezorro266.bukkit.srm.Utils;
 import com.thezorro266.bukkit.srm.exceptions.ContentSaveException;
-import com.thezorro266.bukkit.srm.factories.RegionFactory;
 import com.thezorro266.bukkit.srm.factories.SignFactory;
 import com.thezorro266.bukkit.srm.hooks.Economy;
+import com.thezorro266.bukkit.srm.region.Region;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -41,7 +42,7 @@ public class TemplateRent extends TemplateLease {
 
 	@Override
 	public void clickSign(Player player, SignFactory.Sign sign) {
-		RegionFactory.Region region = sign.getRegion();
+		Region region = sign.getRegion();
 		if (isRegionOccupied(region)) {
 			if (isRegionOwner(player, region)) {
 				// TODO: Player permissions
@@ -132,7 +133,7 @@ public class TemplateRent extends TemplateLease {
 	@Override
 	public void schedule() {
 		synchronized (regionList) {
-			for (RegionFactory.Region region : regionList) {
+			for (Region region : regionList) {
 				if (isRegionOccupied(region)) {
 					int currentSecs = (int) (System.currentTimeMillis() / 1000);
 

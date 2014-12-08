@@ -18,18 +18,19 @@
 
 package com.thezorro266.bukkit.srm;
 
-import com.thezorro266.bukkit.srm.factories.RegionFactory;
-import com.thezorro266.bukkit.srm.helpers.RegionOwner;
-import com.thezorro266.bukkit.srm.templates.Template;
-import com.thezorro266.bukkit.srm.templates.interfaces.OwnableTemplate;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import com.thezorro266.bukkit.srm.helpers.RegionOwner;
+import com.thezorro266.bukkit.srm.region.Region;
+import com.thezorro266.bukkit.srm.templates.Template;
+import com.thezorro266.bukkit.srm.templates.interfaces.OwnableTemplate;
 
 public class PlayerManager implements Listener {
 	private final ArrayList<RegionOwner> ownerList = new ArrayList<RegionOwner>();
@@ -41,13 +42,13 @@ public class PlayerManager implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		ArrayList<RegionFactory.Region> tempRegions = new ArrayList<RegionFactory.Region>();
+		ArrayList<Region> tempRegions = new ArrayList<Region>();
 		synchronized (SimpleRegionMarket.getInstance().getTemplateManager().getTemplateList()) {
 			for (Template template : SimpleRegionMarket.getInstance().getTemplateManager().getTemplateList()) {
 				if (template instanceof OwnableTemplate) {
 					OwnableTemplate ownableTemplate = (OwnableTemplate) template;
 					synchronized (template.getRegionList()) {
-						for (RegionFactory.Region region : template.getRegionList()) {
+						for (Region region : template.getRegionList()) {
 							String mainOwner = ownableTemplate.getMainOwner(region);
 							if (mainOwner != null && mainOwner.equalsIgnoreCase(event.getPlayer().getName())) {
 								tempRegions.add(region);
@@ -58,7 +59,7 @@ public class PlayerManager implements Listener {
 			}
 		}
 		synchronized (ownerList) {
-			for (RegionFactory.Region region : tempRegions) {
+			for (Region region : tempRegions) {
 				ownerList.add(new RegionOwner(event.getPlayer(), region));
 			}
 		}
@@ -76,8 +77,8 @@ public class PlayerManager implements Listener {
 		}
 	}
 
-	public ArrayList<RegionFactory.Region> getPlayerRegions(Player player) {
-		ArrayList<RegionFactory.Region> tempRegions = new ArrayList<RegionFactory.Region>();
+	public ArrayList<Region> getPlayerRegions(Player player) {
+		ArrayList<Region> tempRegions = new ArrayList<Region>();
 		synchronized (ownerList) {
 			for (Iterator<RegionOwner> iterator = ownerList.iterator(); iterator.hasNext(); ) {
 				RegionOwner regionOwner = iterator.next();
@@ -88,7 +89,7 @@ public class PlayerManager implements Listener {
 				}
 
 				if (owner.equals(player)) {
-					RegionFactory.Region region = regionOwner.getRegion();
+					Region region = regionOwner.getRegion();
 					if (region == null) {
 						iterator.remove();
 						continue;

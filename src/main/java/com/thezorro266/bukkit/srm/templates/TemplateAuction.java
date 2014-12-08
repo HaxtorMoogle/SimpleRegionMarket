@@ -20,7 +20,8 @@ package com.thezorro266.bukkit.srm.templates;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import com.thezorro266.bukkit.srm.factories.RegionFactory;
+
+import com.thezorro266.bukkit.srm.region.Region;
 import com.thezorro266.bukkit.srm.templates.interfaces.TimedTemplate;
 
 public class TemplateAuction extends TemplateSell implements TimedTemplate {
@@ -36,7 +37,7 @@ public class TemplateAuction extends TemplateSell implements TimedTemplate {
 	}
 
 	@Override
-	public boolean cancel(RegionFactory.Region region, Player player) {
+	public boolean cancel(Region region, Player player) {
 		return false;
 	}
 

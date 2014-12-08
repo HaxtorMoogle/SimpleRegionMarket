@@ -21,12 +21,15 @@ package com.thezorro266.bukkit.srm;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
+
 import lombok.Getter;
+
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.UnknownDependencyException;
+
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
@@ -42,7 +45,7 @@ import com.sk89q.worldedit.data.DataException;
 import com.sk89q.worldedit.schematic.SchematicFormat;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.thezorro266.bukkit.srm.exceptions.ThisShouldNeverHappenException;
-import com.thezorro266.bukkit.srm.factories.RegionFactory;
+import com.thezorro266.bukkit.srm.region.Region;
 
 public class WorldEditManager {
 	private static final String WORLD_EDIT_PLUGIN_NAME = "WorldEdit"; //NON-NLS
@@ -62,7 +65,7 @@ public class WorldEditManager {
 		}
 	}
 
-	public File getSchematicFile(RegionFactory.Region region) {
+	public File getSchematicFile(Region region) {
 		return new File(
 				new File(
 						new File(
@@ -77,7 +80,7 @@ public class WorldEditManager {
 				String.format(REGIONS_SCHEMATIC_FORMAT_STRING, region.getName()));
 	}
 
-	public void replaceRegionFromSchematic(RegionFactory.Region region) {
+	public void replaceRegionFromSchematic(Region region) {
 		if (region.getWorldguardRegion() instanceof ProtectedCuboidRegion) {
 			File schematicFile = getSchematicFile(region);
 
@@ -136,7 +139,7 @@ public class WorldEditManager {
 		}
 	}
 
-	public void saveRegionToSchematic(RegionFactory.Region region) throws IOException {
+	public void saveRegionToSchematic(Region region) throws IOException {
 		if (region.getWorldguardRegion() instanceof ProtectedCuboidRegion) {
 			File schematicFile = getSchematicFile(region);
 
@@ -157,7 +160,7 @@ public class WorldEditManager {
 		}
 	}
 
-	public CuboidClipboard getClipboardFromRegion(RegionFactory.Region region) {
+	public CuboidClipboard getClipboardFromRegion(Region region) {
 		if (region.getWorldguardRegion() instanceof ProtectedCuboidRegion) {
 			ProtectedCuboidRegion cuboid = (ProtectedCuboidRegion) region.getWorldguardRegion();
 

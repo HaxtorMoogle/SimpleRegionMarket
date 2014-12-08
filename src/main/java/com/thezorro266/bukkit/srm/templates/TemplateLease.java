@@ -23,12 +23,14 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 
 import com.thezorro266.bukkit.srm.hooks.Economy;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.thezorro266.bukkit.srm.LanguageSupport;
 import com.thezorro266.bukkit.srm.SimpleRegionMarket;
@@ -37,6 +39,7 @@ import com.thezorro266.bukkit.srm.exceptions.ContentSaveException;
 import com.thezorro266.bukkit.srm.factories.RegionFactory;
 import com.thezorro266.bukkit.srm.factories.SignFactory;
 import com.thezorro266.bukkit.srm.helpers.Location;
+import com.thezorro266.bukkit.srm.region.Region;
 import com.thezorro266.bukkit.srm.templates.interfaces.TimedTemplate;
 
 public class TemplateLease extends TemplateSell implements TimedTemplate {
@@ -60,7 +63,7 @@ public class TemplateLease extends TemplateSell implements TimedTemplate {
 	@Override
 	public void schedule() {
 		synchronized (regionList) {
-			for (RegionFactory.Region region : regionList) {
+			for (Region region : regionList) {
 				if (isRegionOccupied(region)) {
 					int currentSecs = (int) (System.currentTimeMillis() / 1000);
 
@@ -142,17 +145,17 @@ public class TemplateLease extends TemplateSell implements TimedTemplate {
 	}
 
 	@Override
-	public boolean cancel(RegionFactory.Region region, Player player) {
+	public boolean cancel(Region region, Player player) {
 		return false;
 	}
 
 	@Override
-	public String getMainOwner(RegionFactory.Region region) {
+	public String getMainOwner(Region region) {
 		return (String) region.getOptions().get("owner");
 	}
 
 	@Override
-	public boolean setRegionOccupied(RegionFactory.Region region, boolean isOccupied) {
+	public boolean setRegionOccupied(Region region, boolean isOccupied) {
 		if (!isOccupied) {
 			region.getOptions().set("renttime", null);
 			region.getOptions().set("owner", null);
@@ -163,7 +166,7 @@ public class TemplateLease extends TemplateSell implements TimedTemplate {
 
 	@Override
 	public void clickSign(Player player, SignFactory.Sign sign) {
-		RegionFactory.Region region = sign.getRegion();
+		Region region = sign.getRegion();
 		if (isRegionOccupied(region)) {
 			if (isRegionOwner(player, region)) {
 				player.sendMessage(LanguageSupport.instance.getString("region.yours"));
@@ -223,7 +226,7 @@ public class TemplateLease extends TemplateSell implements TimedTemplate {
 	}
 
 	@Override
-	public void replacementMap(RegionFactory.Region region, HashMap<String, String> replacementMap) {
+	public void replacementMap(Region region, HashMap<String, String> replacementMap) {
 		super.replacementMap(region, replacementMap);
 
 		if (region.getOptions().exists("owner"))
@@ -245,7 +248,7 @@ public class TemplateLease extends TemplateSell implements TimedTemplate {
 				inputMap.get("region"));
 
 		if (worldguardRegion != null) {
-			RegionFactory.Region region = SimpleRegionMarket.getInstance().getWorldHelper()
+			Region region = SimpleRegionMarket.getInstance().getWorldHelper()
 					.getRegionExact(worldguardRegion.getId(), block.getWorld());
 
 			if (region == null) {

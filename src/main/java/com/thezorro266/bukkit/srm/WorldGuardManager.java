@@ -39,14 +39,15 @@ import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.thezorro266.bukkit.srm.factories.RegionFactory;
+import com.thezorro266.bukkit.srm.region.Region;
 
 public class WorldGuardManager
 {
 
     private WorldGuardPlugin worldguardPlugin;
-    private WeakHashMap<RegionFactory.Region, WeakReference<WorldGuardOwnable>> ownableMap = new WeakHashMap<RegionFactory.Region, WeakReference<WorldGuardOwnable>>();
+    private WeakHashMap<Region, WeakReference<WorldGuardOwnable>> ownableMap = new WeakHashMap<Region, WeakReference<WorldGuardOwnable>>();
 
-    public WorldGuardOwnable getOwnable(RegionFactory.Region region)
+    public WorldGuardOwnable getOwnable(Region region)
     {
         WorldGuardOwnable wgo;
         if (ownableMap.containsKey(region))

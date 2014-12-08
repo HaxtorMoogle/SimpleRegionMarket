@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.thezorro266.bukkit.srm.exceptions.NotEnoughPermissionsException;
+
 import lombok.Getter;
 
 import org.bukkit.block.Block;
@@ -32,9 +33,9 @@ import org.bukkit.entity.Player;
 
 import com.thezorro266.bukkit.srm.SimpleRegionMarket;
 import com.thezorro266.bukkit.srm.exceptions.TemplateFormatException;
-import com.thezorro266.bukkit.srm.factories.RegionFactory.Region;
 import com.thezorro266.bukkit.srm.factories.SignFactory.Sign;
 import com.thezorro266.bukkit.srm.helpers.Location;
+import com.thezorro266.bukkit.srm.region.Region;
 
 public abstract class Template {
 	public static final String ID_NONE = "none";

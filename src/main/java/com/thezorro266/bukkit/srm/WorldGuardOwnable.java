@@ -10,7 +10,7 @@ import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
-import com.thezorro266.bukkit.srm.factories.RegionFactory;
+import com.thezorro266.bukkit.srm.region.Region;
 
 public class WorldGuardOwnable
 {
@@ -19,11 +19,12 @@ public class WorldGuardOwnable
     private DefaultDomain members;
     private WorldGuardPlugin worldguardPlugin;
 
-    WorldGuardOwnable(RegionFactory.Region region)
+    WorldGuardOwnable(Region region)
     {
         this.world = region.getWorld();
         this.owners = region.getWorldguardRegion().getOwners();
         this.members = region.getWorldguardRegion().getMembers();
+        
     }
 
     public void addMember(LocalPlayer localPlayer)

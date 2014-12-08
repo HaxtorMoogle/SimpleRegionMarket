@@ -18,25 +18,26 @@
 
 package com.thezorro266.bukkit.srm.helpers;
 
-import com.thezorro266.bukkit.srm.factories.RegionFactory;
+import com.thezorro266.bukkit.srm.region.Region;
+
 import org.bukkit.entity.Player;
 
 import java.lang.ref.WeakReference;
 
 public class RegionOwner {
 	private WeakReference<Player> player;
-	private WeakReference<RegionFactory.Region> region;
+	private WeakReference<Region> region;
 
-	public RegionOwner(Player player, RegionFactory.Region region) {
+	public RegionOwner(Player player, Region region) {
 		this.player = new WeakReference<Player>(player);
-		this.region = new WeakReference<RegionFactory.Region>(region);
+		this.region = new WeakReference<Region>(region);
 	}
 
 	public Player getPlayer() {
 		return player.get();
 	}
 	
-	public RegionFactory.Region getRegion() {
+	public Region getRegion() {
 		return region.get();
 	}
 }

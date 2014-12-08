@@ -19,7 +19,8 @@
 package com.thezorro266.bukkit.srm.templates.interfaces;
 
 import org.bukkit.OfflinePlayer;
-import com.thezorro266.bukkit.srm.factories.RegionFactory.Region;
+
+import com.thezorro266.bukkit.srm.region.Region;
 
 /**
  * An interface that gives a template the general methods to manage owners and members and being able to set a region occupied.

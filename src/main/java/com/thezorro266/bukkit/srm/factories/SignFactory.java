@@ -20,18 +20,21 @@ package com.thezorro266.bukkit.srm.factories;
 
 import java.util.Map;
 import java.util.Set;
+
 import lombok.Data;
 import lombok.Getter;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
+
 import com.thezorro266.bukkit.srm.SimpleRegionMarket;
 import com.thezorro266.bukkit.srm.exceptions.ContentLoadException;
-import com.thezorro266.bukkit.srm.factories.RegionFactory.Region;
 import com.thezorro266.bukkit.srm.helpers.Location;
 import com.thezorro266.bukkit.srm.helpers.Options;
+import com.thezorro266.bukkit.srm.region.Region;
 
 public class SignFactory {
 	public static final SignFactory instance = new SignFactory();

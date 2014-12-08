@@ -18,7 +18,7 @@ public class WorldGuardPlayer extends LocalPlayer
         {
             throw new IllegalArgumentException("Player must not be null");
         }
-
+        
         this.player = player;
     }
 

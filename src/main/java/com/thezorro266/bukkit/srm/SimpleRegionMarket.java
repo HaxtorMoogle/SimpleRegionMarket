@@ -24,8 +24,6 @@ import java.util.logging.Level;
 
 import com.thezorro266.bukkit.srm.hooks.*;
 
-import lombok.Getter;
-
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.thezorro266.bukkit.srm.exceptions.ContentLoadException;
@@ -39,23 +37,23 @@ import com.thezorro266.bukkit.srm.templates.interfaces.TimedTemplate;
 public class SimpleRegionMarket extends JavaPlugin {
 	private static final boolean PRINT_STACKTRACE = false;
 	public static final String SRM_COMMAND = "regionmarket"; //NON-NLS
-	@Getter
+	
 	private static SimpleRegionMarket instance = null;
-	@Getter
+	
 	private final LocationSignHelper locationSignHelper;
-	@Getter
+	
 	private final WorldHelper worldHelper;
-	@Getter
+	
 	private final TemplateManager templateManager;
-	@Getter
+	
 	private final WorldEditManager worldEditManager;
-	@Getter
+	
 	private final WorldGuardManager worldGuardManager;
-	@Getter
+	
 	private final PlayerManager playerManager;
-	@Getter
+	
 	private Economy economy;
-	@Getter
+	
 	private Permissions permissions;
 	private final VaultHook vaultHook;
 	private boolean loading = true;

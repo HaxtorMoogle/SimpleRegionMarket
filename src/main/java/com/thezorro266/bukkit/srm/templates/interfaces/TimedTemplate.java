@@ -19,11 +19,12 @@
 package com.thezorro266.bukkit.srm.templates.interfaces;
 
 import org.bukkit.entity.Player;
-import com.thezorro266.bukkit.srm.factories.RegionFactory;
+
+import com.thezorro266.bukkit.srm.region.Region;
 
 public interface TimedTemplate {
 
-	public boolean cancel(RegionFactory.Region region, Player player);
+	public boolean cancel(Region region, Player player);
 
 	public void schedule();
 }
