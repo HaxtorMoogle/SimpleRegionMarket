@@ -21,6 +21,7 @@ package com.thezorro266.bukkit.srm.templates;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.thezorro266.bukkit.srm.SimpleRegionMarket;
 import com.thezorro266.bukkit.srm.WorldGuardManager;
@@ -30,53 +31,53 @@ import com.thezorro266.bukkit.srm.templates.interfaces.OwnableTemplate;
 
 public abstract class OwnableRegionTemplate extends SignTemplate implements OwnableTemplate
 {
-    public OwnableRegionTemplate(ConfigurationSection templateConfigSection)
+    private SimpleRegionMarket thisPlugin;
+    private WorldGuardManager wordGuardManager;
+    
+    public OwnableRegionTemplate(ConfigurationSection templateConfigSection, SimpleRegionMarket thePlugin)
     {
         super(templateConfigSection);
+        thisPlugin = thePlugin;
+        wordGuardManager = thisPlugin.getWorldGuardManager();
     }
 
     @Override
     public boolean isRegionOwner(OfflinePlayer player, Region region)
     {
-        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-        return wgm.getOwnable(region).isPlayerOwner(wgm.wrapPlayer(player));
+        return wordGuardManager.getOwnable(region).isPlayerOwner(wordGuardManager.wrapPlayer(player));
     }
 
     @Override
     public boolean isRegionMember(OfflinePlayer player, Region region)
     {
-        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-        return wgm.getOwnable(region).isPlayerMember(wgm.wrapPlayer(player));
+        return wordGuardManager.getOwnable(region).isPlayerMember(wordGuardManager.wrapPlayer(player));
     }
 
     @Override
     public OfflinePlayer[] getRegionOwners(Region region)
     {
-        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-        return wgm.getOwnable(region).getOwners();
+        return wordGuardManager.getOwnable(region).getOwners();
     }
 
     @Override
     public OfflinePlayer[] getRegionMembers(Region region)
     {
-        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-        return wgm.getOwnable(region).getMembers();
+        return wordGuardManager.getOwnable(region).getMembers();
     }
 
     @Override
     public boolean setRegionOwners(Region region, OfflinePlayer[] owners)
     {
-        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-        WorldGuardOwnable wgo = wgm.getOwnable(region);
+        WorldGuardOwnable wgo = wordGuardManager.getOwnable(region);
 
         wgo.removeAllOwners();
         for (OfflinePlayer player : owners)
         {
-            wgo.addOwner(wgm.wrapPlayer(player));
+            wgo.addOwner(wordGuardManager.wrapPlayer(player));
         }
         try
         {
-            wgo.saveChanges();
+            wordGuardManager.saveChanges();
             return true;
         }
         catch (StorageException e)
@@ -90,18 +91,17 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
     @Override
     public boolean setRegionMembers(Region region, OfflinePlayer[] members)
     {
-        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-        WorldGuardOwnable wgo = wgm.getOwnable(region);
+        WorldGuardOwnable wgo = wordGuardManager.getOwnable(region);
 
         wgo.removeAllMembers();
         for (OfflinePlayer player : members)
         {
-            wgo.addMember(wgm.wrapPlayer(player));
+            wgo.addMember(wordGuardManager.wrapPlayer(player));
         }
 
         try
         {
-            wgo.saveChanges();
+            wordGuardManager.saveChanges();
             return true;
         }
         catch (StorageException e)
@@ -115,14 +115,14 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
     @Override
     public boolean addRegionOwner(Region region, OfflinePlayer player)
     {
-        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-        WorldGuardOwnable wgo = wgm.getOwnable(region);
+        WorldGuardOwnable wgo = wordGuardManager.getOwnable(region);
 
-        wgo.addOwner(wgm.wrapPlayer(player));
+        wgo.addOwner(wordGuardManager.wrapPlayer(player));
 
         try
         {
-            wgo.saveChanges();
+            
+            wordGuardManager.saveChanges();
             return true;
         }
         catch (StorageException e)
@@ -139,11 +139,15 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
         WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
         WorldGuardOwnable wgo = wgm.getOwnable(region);
 
+
+        RegionManager mgr = thisPlugin.WG.getGlobalRegionManager().get(region.getWorld());
+        Map<String, ProtectedRegion> regions = mgr.getRegions();
         wgo.addMember(wgm.wrapPlayer(player));
 
         try
         {
-            wgo.saveChanges();
+            wordGuardManager.saveChanges();
+            wgm.getWG();
             return true;
         }
         catch (StorageException e)
@@ -157,14 +161,13 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
     @Override
     public boolean removeRegionOwner(Region region, OfflinePlayer player)
     {
-        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
         WorldGuardOwnable wgo = wgm.getOwnable(region);
 
         wgo.removeOwner(wgm.wrapPlayer(player));
 
         try
         {
-            wgo.saveChanges();
+            wordGuardManager.saveChanges();
             return true;
         }
         catch (StorageException e)
@@ -178,14 +181,13 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
     @Override
     public boolean removeRegionMember(Region region, OfflinePlayer player)
     {
-        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-        WorldGuardOwnable wgo = wgm.getOwnable(region);
+        WorldGuardOwnable wgo = wordGuardManager.getOwnable(region);
 
-        wgo.removeMember(wgm.wrapPlayer(player));
+        wgo.removeMember(wordGuardManager.wrapPlayer(player));
 
         try
         {
-            wgo.saveChanges();
+            wordGuardManager.saveChanges();
             return true;
         }
         catch (StorageException e)
@@ -205,15 +207,14 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
     @Override
     public boolean clearOwnershipOfRegion(Region region)
     {
-        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-        WorldGuardOwnable wgo = wgm.getOwnable(region);
+        WorldGuardOwnable wgo = wordGuardManager.getOwnable(region);
 
         wgo.removeAllMembers();
         wgo.removeAllOwners();
 
         try
         {
-            wgo.saveChanges();
+            wordGuardManager.saveChanges();
             return true;
         }
         catch (StorageException e)

@@ -25,7 +25,7 @@ public class Sign
     // Is the sign on a wall?
     final boolean isWallSign;
     
-    // Dirrection the sign is faceing
+    // Direction the sign is faceting
     final BlockFace direction;
     
     // What ever the hell the options are...

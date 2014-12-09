@@ -14,17 +14,17 @@ import com.thezorro266.bukkit.srm.region.Region;
 
 public class WorldGuardOwnable
 {
-    private World world;
+   // private World world;
     private DefaultDomain owners;
     private DefaultDomain members;
-    private WorldGuardPlugin worldguardPlugin;
+  //  private WorldGuardPlugin worldguardPlugin;
 
     WorldGuardOwnable(Region region)
     {
-        this.world = region.getWorld();
+      //  this.world = region.getWorld();
         this.owners = region.getWorldguardRegion().getOwners();
         this.members = region.getWorldguardRegion().getMembers();
-
+        //worldguardPlugin = wg;
     }
 
     public void addMember(LocalPlayer localPlayer)
@@ -115,8 +115,8 @@ public class WorldGuardOwnable
         return list;
     }
 
-    public void saveChanges() throws StorageException
+   /*public void saveChanges() throws StorageException
     {
         worldguardPlugin.getRegionManager(world).save();
-    }
+    }*/
 }

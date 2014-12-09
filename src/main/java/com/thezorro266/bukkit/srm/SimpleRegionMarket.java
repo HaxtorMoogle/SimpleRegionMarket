@@ -39,7 +39,7 @@ public class SimpleRegionMarket extends JavaPlugin
     private static final boolean PRINT_STACKTRACE = false;
     public static final String SRM_COMMAND = "regionmarket"; // NON-NLS
 
-    private static SimpleRegionMarket instance = null;
+    private static SimpleRegionMarket instance;
 
     private final LocationSignHelper locationSignHelper;
 

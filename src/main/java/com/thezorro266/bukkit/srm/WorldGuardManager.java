@@ -36,6 +36,7 @@ public class WorldGuardManager
 {
 
     private WorldGuardPlugin worldguardPlugin;
+    
     private WeakHashMap<Region, WeakReference<WorldGuardOwnable>> ownableMap = new WeakHashMap<Region, WeakReference<WorldGuardOwnable>>();
 
     public WorldGuardOwnable getOwnable(Region region)
@@ -130,6 +131,12 @@ public class WorldGuardManager
             return worldguardPlugin.wrapPlayer(player);
         }
         return null;
+    }
+
+    public void saveChanges()
+    {
+        // TODO Auto-generated method stub
+        
     }
 
 }
