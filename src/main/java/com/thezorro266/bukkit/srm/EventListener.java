@@ -19,6 +19,7 @@
 package com.thezorro266.bukkit.srm;
 
 import java.text.MessageFormat;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,16 +28,20 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+
 import com.thezorro266.bukkit.srm.exceptions.ContentSaveException;
 import com.thezorro266.bukkit.srm.factories.SignFactory;
 import com.thezorro266.bukkit.srm.helpers.Location;
 import com.thezorro266.bukkit.srm.templates.Template;
 
+
 public class EventListener implements Listener
 {
-    public EventListener()
+    private SimpleRegionMarket thePlugin;
+    public EventListener(SimpleRegionMarket thePlug)
     {
-        SimpleRegionMarket.getInstance().getServer().getPluginManager().registerEvents(this, SimpleRegionMarket.getInstance());
+        thePlugin = thePlug;
+        thePlugin.getServer().getPluginManager().registerEvents(this, thePlugin);
     }
 
     @EventHandler
@@ -55,9 +60,9 @@ public class EventListener implements Listener
                 }
             }
 
-            synchronized (SimpleRegionMarket.getInstance().getTemplateManager().getTemplateList())
+            synchronized (thePlugin.getTemplateManager().getTemplateList())
             {
-                for (Template template : SimpleRegionMarket.getInstance().getTemplateManager().getTemplateList())
+                for (Template template : thePlugin.getTemplateManager().getTemplateList())
                 {
                     String[] lines = event.getLines();
                     if (template.isSignApplicable(Location.fromBlock(event.getBlock()), lines))
@@ -84,15 +89,15 @@ public class EventListener implements Listener
                 {
                     try
                     {
-                        SimpleRegionMarket.getInstance().getTemplateManager().saveRegion(sign.getRegion());
+                        thePlugin.getTemplateManager().saveRegion(sign.getRegion());
                     }
                     catch (ContentSaveException e)
                     {
                         if (event.getPlayer() != null)
                             event.getPlayer().sendMessage(ChatColor.RED + LanguageSupport.instance.getString("region.save.problem.playermsg"));
 
-                        SimpleRegionMarket.getInstance().getLogger().severe(MessageFormat.format(LanguageSupport.instance.getString("region.save.problem.console"), sign.getRegion().getName()));
-                        SimpleRegionMarket.getInstance().printError(e);
+                        thePlugin.getLogger().severe(MessageFormat.format(LanguageSupport.instance.getString("region.save.problem.console"), sign.getRegion().getName()));
+                        thePlugin.printError(e);
                     }
                 }
                 else

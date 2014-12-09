@@ -47,10 +47,11 @@ public class TemplateLease extends TemplateSell implements TimedTemplate
 {
     protected int minTime = 60;
     protected int maxTime = -1;
+    
 
-    public TemplateLease(ConfigurationSection templateConfigSection)
+    public TemplateLease(ConfigurationSection templateConfigSection, SimpleRegionMarket thePlugin)
     {
-        super(templateConfigSection);
+        super(templateConfigSection, thePlugin);
 
         setType("lease");
 
@@ -79,7 +80,7 @@ public class TemplateLease extends TemplateSell implements TimedTemplate
                     {
                         OfflinePlayer op = Bukkit.getOfflinePlayer((String) region.getOptions().get("owner"));
 
-                        Economy ec = SimpleRegionMarket.getInstance().getEconomy();
+                        Economy ec = thePlugin.getEconomy();
                         double price = (Double) region.getOptions().get("price");
                         String playerAccount = op.getName();
                         String regionAccount = (String) region.getOptions().get("account");
@@ -134,12 +135,12 @@ public class TemplateLease extends TemplateSell implements TimedTemplate
 
                         try
                         {
-                            SimpleRegionMarket.getInstance().getTemplateManager().saveRegion(region);
+                            thePlugin.getTemplateManager().saveRegion(region);
                         }
                         catch (ContentSaveException e)
                         {
-                            SimpleRegionMarket.getInstance().getLogger().severe(MessageFormat.format(LanguageSupport.instance.getString("region.save.problem.console"), region.getName()));
-                            SimpleRegionMarket.getInstance().printError(e);
+                            thePlugin.getLogger().severe(MessageFormat.format(LanguageSupport.instance.getString("region.save.problem.console"), region.getName()));
+                            thePlugin.printError(e);
                         }
                     }
                     region.updateSigns();
@@ -190,7 +191,7 @@ public class TemplateLease extends TemplateSell implements TimedTemplate
         else
         {
             // TODO: Player permissions
-            Economy ec = SimpleRegionMarket.getInstance().getEconomy();
+            Economy ec = thePlugin.getEconomy();
             double price = (Double) region.getOptions().get("price");
             String playerAccount = player.getName();
             String regionAccount = (String) region.getOptions().get("account");
@@ -232,13 +233,13 @@ public class TemplateLease extends TemplateSell implements TimedTemplate
 
             try
             {
-                SimpleRegionMarket.getInstance().getTemplateManager().saveRegion(region);
+                thePlugin.getTemplateManager().saveRegion(region);
             }
             catch (ContentSaveException e)
             {
                 player.sendMessage(ChatColor.RED + LanguageSupport.instance.getString("region.save.problem.player"));
-                SimpleRegionMarket.getInstance().getLogger().severe(MessageFormat.format(LanguageSupport.instance.getString("region.save.problem.console"), region.getName()));
-                SimpleRegionMarket.getInstance().printError(e);
+                thePlugin.getLogger().severe(MessageFormat.format(LanguageSupport.instance.getString("region.save.problem.console"), region.getName()));
+                thePlugin.printError(e);
             }
 
             player.sendMessage(LanguageSupport.instance.getString("region.new.owner"));
@@ -268,13 +269,13 @@ public class TemplateLease extends TemplateSell implements TimedTemplate
 
         if (worldguardRegion != null)
         {
-            Region region = SimpleRegionMarket.getInstance().getWorldHelper().getRegionExact(worldguardRegion.getId(), block.getWorld());
+            Region region = thePlugin.getWorldHelper().getRegionExact(worldguardRegion.getId(), block.getWorld());
 
             if (region == null)
             {
                 region = RegionFactory.instance.createRegion(this, block.getWorld(), worldguardRegion);
 
-                if (SimpleRegionMarket.getInstance().getEconomy().isEnabled())
+                if (thePlugin.getEconomy().isEnabled())
                 {
                     double price;
                     String account = player.getName();
@@ -304,8 +305,8 @@ public class TemplateLease extends TemplateSell implements TimedTemplate
 
                     if (priceMin > price || (priceMax != -1 && price > priceMax))
                     {
-                        String priceMinString = SimpleRegionMarket.getInstance().getEconomy().format(priceMin);
-                        String priceMaxString = SimpleRegionMarket.getInstance().getEconomy().format(priceMax);
+                        String priceMinString = thePlugin.getEconomy().format(priceMin);
+                        String priceMaxString = thePlugin.getEconomy().format(priceMax);
                         player.sendMessage(MessageFormat.format(ChatColor.RED + LanguageSupport.instance.getString("price.must.between"), priceMinString, priceMaxString));
                         return null;
                     }
@@ -351,14 +352,14 @@ public class TemplateLease extends TemplateSell implements TimedTemplate
                 {
                     try
                     {
-                        SimpleRegionMarket.getInstance().getWorldEditManager().saveRegionToSchematic(region);
+                        thePlugin.getWorldEditManager().saveRegionToSchematic(region);
                     }
                     catch (IOException e)
                     {
                         player.sendMessage(LanguageSupport.instance.getString("region.schematic.save.failure"));
-                        SimpleRegionMarket.getInstance().getLogger()
+                        thePlugin.getLogger()
                                 .severe(MessageFormat.format(LanguageSupport.instance.getString("region.in.world.schematic.save.failure.console"), region.getName(), region.getWorld().getName()));
-                        SimpleRegionMarket.getInstance().printError(e);
+                        thePlugin.printError(e);
                     }
                 }
             }
@@ -373,12 +374,12 @@ public class TemplateLease extends TemplateSell implements TimedTemplate
 
             try
             {
-                SimpleRegionMarket.getInstance().getTemplateManager().saveRegion(region);
+                thePlugin.getTemplateManager().saveRegion(region);
             }
             catch (ContentSaveException e)
             {
-                SimpleRegionMarket.getInstance().getLogger().severe(MessageFormat.format(LanguageSupport.instance.getString("region.save.problem.console"), region.getName()));
-                SimpleRegionMarket.getInstance().printError(e);
+                thePlugin.getLogger().severe(MessageFormat.format(LanguageSupport.instance.getString("region.save.problem.console"), region.getName()));
+                thePlugin.printError(e);
             }
 
             return sign;

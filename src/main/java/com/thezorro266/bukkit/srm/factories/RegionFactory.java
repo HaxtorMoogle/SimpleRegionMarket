@@ -40,6 +40,7 @@ public class RegionFactory
 {
     public static final RegionFactory instance = new RegionFactory();
 
+   
     private int regionCount = 0;
 
     RegionFactory()

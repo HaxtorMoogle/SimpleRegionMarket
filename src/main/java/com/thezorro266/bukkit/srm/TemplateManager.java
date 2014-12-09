@@ -52,10 +52,12 @@ public class TemplateManager
     public static final String REGIONS_YML_FORMAT_STRING = "%s.yml"; // NON-NLS
 
     private final List<Template> templateList = new ArrayList<Template>();
+    private SimpleRegionMarket thePlugin;
 
-    public void load() throws TemplateFormatException, IOException
+    public void load(SimpleRegionMarket plug) throws TemplateFormatException, IOException
     {
-        File templateFile = new File(SimpleRegionMarket.getInstance().getDataFolder(), TEMPLATE_CONFIG_FILENAME);
+        thePlugin = plug;
+        File templateFile = new File(thePlugin.getDataFolder(), TEMPLATE_CONFIG_FILENAME);
 
         if (templateFile.exists())
         {
@@ -95,7 +97,7 @@ public class TemplateManager
         else
         {
             // Load very old agents file, if exist
-            File agentsFile = new File(SimpleRegionMarket.getInstance().getDataFolder(), AGENTS_FILENAME);
+            File agentsFile = new File(thePlugin.getDataFolder(), AGENTS_FILENAME);
             if (agentsFile.exists())
             {
                 if (agentsFile.canRead())
@@ -117,8 +119,8 @@ public class TemplateManager
 
     private void loadDefault() throws TemplateFormatException, IOException
     {
-        SimpleRegionMarket.getInstance().saveResource(TEMPLATE_CONFIG_FILENAME, false);
-        load();
+        thePlugin.saveResource(TEMPLATE_CONFIG_FILENAME, false);
+        load(thePlugin);
     }
 
     private void updateAgents(YamlConfiguration agentsYaml) throws TemplateFormatException, IOException
@@ -145,7 +147,7 @@ public class TemplateManager
 
         if (tokenHotel == null || tokenAgent == null)
         {
-            SimpleRegionMarket.getInstance().getLogger().severe(LanguageSupport.instance.getString("config.import.old.failed"));
+            thePlugin.getLogger().severe(LanguageSupport.instance.getString("config.import.old.failed"));
             throw new RuntimeException("There were no templates with the IDs SELL and HOTEL found");
         }
 
@@ -160,7 +162,7 @@ public class TemplateManager
             path = agentsYaml.getConfigurationSection(world);
             for (final String region : path.getKeys(false))
             {
-                ProtectedRegion protectedRegion = SimpleRegionMarket.getInstance().getWorldGuardManager().getProtectedRegion(realWorld, region);
+                ProtectedRegion protectedRegion = thePlugin.getWorldGuardManager().getProtectedRegion(realWorld, region);
                 if (protectedRegion == null)
                 {
                     continue;
@@ -235,7 +237,7 @@ public class TemplateManager
                 }
             }
         }
-        load();
+        load(thePlugin);
     }
 
     private void update(File templateFile, YamlConfiguration templateYaml) throws TemplateFormatException, IOException
@@ -411,7 +413,7 @@ public class TemplateManager
                 }
 
         templateYaml.save(templateFile);
-        load();
+        load(thePlugin);
     }
 
     public Template getTemplateFromId(String id)
@@ -447,7 +449,7 @@ public class TemplateManager
         {
             for (Template template : templateList)
             {
-                File templateDir = new File(new File(SimpleRegionMarket.getInstance().getDataFolder(), REGIONS_FOLDER), template.getId().toLowerCase());
+                File templateDir = new File(new File(thePlugin.getDataFolder(), REGIONS_FOLDER), template.getId().toLowerCase());
 
                 // Search through template dir, if exists
                 if (templateDir.exists())
@@ -504,7 +506,7 @@ public class TemplateManager
                             }
                             else
                             {
-                                SimpleRegionMarket.getInstance().getLogger()
+                                thePlugin.getLogger()
                                         .warning(MessageFormat.format(LanguageSupport.instance.getString("template.load.world.not.found"), worldStr, template.getId()));
                             }
                         }
@@ -569,7 +571,7 @@ public class TemplateManager
 
     public File getRegionFile(Region region)
     {
-        return new File(new File(new File(new File(SimpleRegionMarket.getInstance().getDataFolder(), REGIONS_FOLDER), region.getTemplate().getId().toLowerCase()), region.getWorld().getName()),
+        return new File(new File(new File(new File(thePlugin.getDataFolder(), REGIONS_FOLDER), region.getTemplate().getId().toLowerCase()), region.getWorld().getName()),
                 String.format(REGIONS_YML_FORMAT_STRING, region.getName()));
     }
 
@@ -593,12 +595,12 @@ public class TemplateManager
         if (region.getTemplate() instanceof TemplateSell)
         {
             TemplateSell sellTemplate = (TemplateSell) region.getTemplate();
-            File schematicFile = SimpleRegionMarket.getInstance().getWorldEditManager().getSchematicFile(region);
+            File schematicFile = thePlugin.getWorldEditManager().getSchematicFile(region);
             if (sellTemplate.doesRegionReset())
             {
                 if (!schematicFile.delete())
                 {
-                    SimpleRegionMarket.getInstance().getLogger().warning("Could not remove region schematic file " + schematicFile.getPath());
+                    thePlugin.getLogger().warning("Could not remove region schematic file " + schematicFile.getPath());
                 }
             }
         }
@@ -606,7 +608,7 @@ public class TemplateManager
         File regionFile = getRegionFile(region);
         if (!regionFile.delete())
         {
-            SimpleRegionMarket.getInstance().getLogger().warning(MessageFormat.format(LanguageSupport.instance.getString("region.save.could.not.remove.file"), regionFile.getPath()));
+            thePlugin.getLogger().warning(MessageFormat.format(LanguageSupport.instance.getString("region.save.could.not.remove.file"), regionFile.getPath()));
         }
     }
 

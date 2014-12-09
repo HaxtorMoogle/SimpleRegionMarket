@@ -36,9 +36,9 @@ import java.text.MessageFormat;
 
 public class TemplateRent extends TemplateLease
 {
-    public TemplateRent(ConfigurationSection templateConfigSection)
+    public TemplateRent(ConfigurationSection templateConfigSection, SimpleRegionMarket thisPlugin)
     {
-        super(templateConfigSection);
+        super(templateConfigSection, thisPlugin);
         setType("rent");
     }
 
@@ -51,7 +51,7 @@ public class TemplateRent extends TemplateLease
             if (isRegionOwner(player, region))
             {
                 // TODO: Player permissions
-                Economy ec = SimpleRegionMarket.getInstance().getEconomy();
+                Economy ec = thePlugin.getEconomy();
                 double price = (Double) region.getOptions().get("price");
                 String playerAccount = player.getName();
                 String regionAccount = (String) region.getOptions().get("account");
@@ -95,7 +95,7 @@ public class TemplateRent extends TemplateLease
         else
         {
             // TODO: Player permissions
-            Economy ec = SimpleRegionMarket.getInstance().getEconomy();
+            Economy ec = thePlugin.getEconomy();
             double price = (Double) region.getOptions().get("price");
             String playerAccount = player.getName();
             String regionAccount = (String) region.getOptions().get("account");
@@ -137,13 +137,13 @@ public class TemplateRent extends TemplateLease
 
             try
             {
-                SimpleRegionMarket.getInstance().getTemplateManager().saveRegion(region);
+                thePlugin.getTemplateManager().saveRegion(region);
             }
             catch (ContentSaveException e)
             {
                 player.sendMessage(ChatColor.RED + LanguageSupport.instance.getString("region.save.problem.player"));
-                SimpleRegionMarket.getInstance().getLogger().severe(MessageFormat.format(LanguageSupport.instance.getString("region.save.problem.console"), region.getName()));
-                SimpleRegionMarket.getInstance().printError(e);
+                thePlugin.getLogger().severe(MessageFormat.format(LanguageSupport.instance.getString("region.save.problem.console"), region.getName()));
+                thePlugin.printError(e);
             }
 
             player.sendMessage(LanguageSupport.instance.getString("region.new.owner"));
@@ -175,12 +175,12 @@ public class TemplateRent extends TemplateLease
 
                         try
                         {
-                            SimpleRegionMarket.getInstance().getTemplateManager().saveRegion(region);
+                            thePlugin.getTemplateManager().saveRegion(region);
                         }
                         catch (ContentSaveException e)
                         {
-                            SimpleRegionMarket.getInstance().getLogger().severe(MessageFormat.format(LanguageSupport.instance.getString("region.save.problem.console"), region.getName()));
-                            SimpleRegionMarket.getInstance().printError(e);
+                            thePlugin.getLogger().severe(MessageFormat.format(LanguageSupport.instance.getString("region.save.problem.console"), region.getName()));
+                            thePlugin.printError(e);
                         }
                     }
                     region.updateSigns();

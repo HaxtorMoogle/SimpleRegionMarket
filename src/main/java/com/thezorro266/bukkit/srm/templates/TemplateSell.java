@@ -54,9 +54,9 @@ public class TemplateSell extends OwnableRegionTemplate
     protected boolean buyerIsOwner = true;
     protected boolean regionReset = false;
 
-    public TemplateSell(ConfigurationSection templateConfigSection)
+    public TemplateSell(ConfigurationSection templateConfigSection, SimpleRegionMarket thisPlugin)
     {
-        super(templateConfigSection);
+        super(templateConfigSection, thisPlugin);
 
         setType("sell");
 
@@ -122,7 +122,7 @@ public class TemplateSell extends OwnableRegionTemplate
             setRegionOccupied(region, false);
             if (regionReset)
             {
-                SimpleRegionMarket.getInstance().getWorldEditManager().replaceRegionFromSchematic(region);
+                thePlugin.getWorldEditManager().replaceRegionFromSchematic(region);
             }
             return true;
         }
@@ -132,8 +132,8 @@ public class TemplateSell extends OwnableRegionTemplate
     @Override
     public void regionCommand(Region region, String cmd, CommandSender sender, String[] arguments) throws NotEnoughPermissionsException
     {
-        Permissions permissions = SimpleRegionMarket.getInstance().getPermissions();
-        Logger logger = SimpleRegionMarket.getInstance().getLogger();
+        Permissions permissions = thePlugin.getPermissions();
+        Logger logger = thePlugin.getLogger();
 
         if (cmd.isEmpty() || cmd.equalsIgnoreCase("help") || cmd.equals("?"))
         {
@@ -154,7 +154,7 @@ public class TemplateSell extends OwnableRegionTemplate
 
                     try
                     {
-                        SimpleRegionMarket.getInstance().getTemplateManager().saveRegion(region);
+                        thePlugin.getTemplateManager().saveRegion(region);
                     }
                     catch (ContentSaveException e)
                     {
@@ -171,7 +171,7 @@ public class TemplateSell extends OwnableRegionTemplate
                 if (cmd.equalsIgnoreCase("remove"))
                 { // NON-NLS
                     ((OwnableTemplate) region.getTemplate()).clearRegion(region);
-                    SimpleRegionMarket.getInstance().getTemplateManager().removeRegion(region);
+                    thePlugin.getTemplateManager().removeRegion(region);
                     RegionFactory.instance.destroyRegion(region);
                     sender.sendMessage(MessageFormat.format(LanguageSupport.instance.getString("region.in.world.removed"), region, region.getWorld()));
                 }
@@ -180,7 +180,7 @@ public class TemplateSell extends OwnableRegionTemplate
                     {
                         try
                         {
-                            SimpleRegionMarket.getInstance().getWorldEditManager().saveRegionToSchematic(region);
+                            thePlugin.getWorldEditManager().saveRegionToSchematic(region);
                             sender.sendMessage(MessageFormat.format(LanguageSupport.instance.getString("region.schematic.save.successful"), region.getName()));
                         }
                         catch (IOException e)
@@ -229,7 +229,7 @@ public class TemplateSell extends OwnableRegionTemplate
         else
         {
             // TODO: Player permissions
-            Economy ec = SimpleRegionMarket.getInstance().getEconomy();
+            Economy ec = thePlugin.getEconomy();
             double price = (Double) region.getOptions().get("price");
             String playerAccount = player.getName();
             String regionAccount = (String) region.getOptions().get("account");
@@ -267,13 +267,13 @@ public class TemplateSell extends OwnableRegionTemplate
 
             try
             {
-                SimpleRegionMarket.getInstance().getTemplateManager().saveRegion(region);
+                thePlugin.getTemplateManager().saveRegion(region);
             }
             catch (ContentSaveException e)
             {
                 player.sendMessage(ChatColor.RED + LanguageSupport.instance.getString("region.save.problem.player"));
-                SimpleRegionMarket.getInstance().getLogger().severe(MessageFormat.format(LanguageSupport.instance.getString("region.save.problem.console"), region.getName()));
-                SimpleRegionMarket.getInstance().printError(e);
+                thePlugin.getLogger().severe(MessageFormat.format(LanguageSupport.instance.getString("region.save.problem.console"), region.getName()));
+                thePlugin.printError(e);
             }
 
             player.sendMessage(LanguageSupport.instance.getString("region.new.owner"));
@@ -288,7 +288,7 @@ public class TemplateSell extends OwnableRegionTemplate
         {
             double price = (Double) region.getOptions().get("price");
 
-            replacementMap.put("price", SimpleRegionMarket.getInstance().getEconomy().format(price));
+            replacementMap.put("price", thePlugin.getEconomy().format(price));
         }
         else
         {
@@ -315,7 +315,7 @@ public class TemplateSell extends OwnableRegionTemplate
 
         if (worldguardRegion != null)
         {
-            Region region = SimpleRegionMarket.getInstance().getWorldHelper().getRegionExact(worldguardRegion.getId(), block.getWorld());
+            Region region = thePlugin.getWorldHelper().getRegionExact(worldguardRegion.getId(), block.getWorld());
 
             if (region == null)
             {
@@ -351,8 +351,8 @@ public class TemplateSell extends OwnableRegionTemplate
 
                     if (priceMin > price || (priceMax != -1 && price > priceMax))
                     {
-                        String priceMinString = SimpleRegionMarket.getInstance().getEconomy().format(priceMin);
-                        String priceMaxString = SimpleRegionMarket.getInstance().getEconomy().format(priceMax);
+                        String priceMinString = thePlugin.getEconomy().format(priceMin);
+                        String priceMaxString = thePlugin.getEconomy().format(priceMax);
                         player.sendMessage(MessageFormat.format(ChatColor.RED + LanguageSupport.instance.getString("price.must.between"), priceMinString, priceMaxString));
                         return null;
                     }
@@ -383,14 +383,14 @@ public class TemplateSell extends OwnableRegionTemplate
                 {
                     try
                     {
-                        SimpleRegionMarket.getInstance().getWorldEditManager().saveRegionToSchematic(region);
+                        thePlugin.getWorldEditManager().saveRegionToSchematic(region);
                     }
                     catch (IOException e)
                     {
                         player.sendMessage(LanguageSupport.instance.getString("region.schematic.save.failure"));
-                        SimpleRegionMarket.getInstance().getLogger()
+                        thePlugin.getLogger()
                                 .severe(MessageFormat.format(LanguageSupport.instance.getString("region.in.world.schematic.save.failure.console"), region.getName(), region.getWorld().getName()));
-                        SimpleRegionMarket.getInstance().printError(e);
+                        thePlugin.printError(e);
                     }
                 }
             }
@@ -405,12 +405,12 @@ public class TemplateSell extends OwnableRegionTemplate
 
             try
             {
-                SimpleRegionMarket.getInstance().getTemplateManager().saveRegion(region);
+                thePlugin.getTemplateManager().saveRegion(region);
             }
             catch (ContentSaveException e)
             {
-                SimpleRegionMarket.getInstance().getLogger().severe(MessageFormat.format(LanguageSupport.instance.getString("region.save.problem.console"), region.getName()));
-                SimpleRegionMarket.getInstance().printError(e);
+                thePlugin.getLogger().severe(MessageFormat.format(LanguageSupport.instance.getString("region.save.problem.console"), region.getName()));
+                thePlugin.printError(e);
             }
 
             return sign;

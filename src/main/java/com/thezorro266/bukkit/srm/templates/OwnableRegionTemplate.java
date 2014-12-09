@@ -21,7 +21,6 @@ package com.thezorro266.bukkit.srm.templates;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
-import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.thezorro266.bukkit.srm.SimpleRegionMarket;
 import com.thezorro266.bukkit.srm.WorldGuardManager;
@@ -31,14 +30,14 @@ import com.thezorro266.bukkit.srm.templates.interfaces.OwnableTemplate;
 
 public abstract class OwnableRegionTemplate extends SignTemplate implements OwnableTemplate
 {
-    private SimpleRegionMarket thisPlugin;
+    protected SimpleRegionMarket thePlugin;
     private WorldGuardManager wordGuardManager;
     
-    public OwnableRegionTemplate(ConfigurationSection templateConfigSection, SimpleRegionMarket thePlugin)
+    public OwnableRegionTemplate(ConfigurationSection templateConfigSection, SimpleRegionMarket ThePlugin)
     {
         super(templateConfigSection);
-        thisPlugin = thePlugin;
-        wordGuardManager = thisPlugin.getWorldGuardManager();
+        thePlugin = ThePlugin;
+        wordGuardManager = thePlugin.getWorldGuardManager();
     }
 
     @Override
@@ -77,7 +76,7 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
         }
         try
         {
-            wordGuardManager.saveChanges();
+            wordGuardManager.saveChanges(region);
             return true;
         }
         catch (StorageException e)
@@ -101,7 +100,7 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
 
         try
         {
-            wordGuardManager.saveChanges();
+            wordGuardManager.saveChanges(region);
             return true;
         }
         catch (StorageException e)
@@ -122,7 +121,7 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
         try
         {
             
-            wordGuardManager.saveChanges();
+            wordGuardManager.saveChanges(region);
             return true;
         }
         catch (StorageException e)
@@ -136,18 +135,17 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
     @Override
     public boolean addRegionMember(Region region, OfflinePlayer player)
     {
-        WorldGuardManager wgm = SimpleRegionMarket.getInstance().getWorldGuardManager();
-        WorldGuardOwnable wgo = wgm.getOwnable(region);
+
+        WorldGuardOwnable wgo = wordGuardManager.getOwnable(region);
 
 
-        RegionManager mgr = thisPlugin.WG.getGlobalRegionManager().get(region.getWorld());
-        Map<String, ProtectedRegion> regions = mgr.getRegions();
-        wgo.addMember(wgm.wrapPlayer(player));
+        
+        wgo.addMember(wordGuardManager.wrapPlayer(player));
 
         try
         {
-            wordGuardManager.saveChanges();
-            wgm.getWG();
+            wordGuardManager.saveChanges(region);
+            wordGuardManager.getWG();
             return true;
         }
         catch (StorageException e)
@@ -161,13 +159,13 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
     @Override
     public boolean removeRegionOwner(Region region, OfflinePlayer player)
     {
-        WorldGuardOwnable wgo = wgm.getOwnable(region);
+        WorldGuardOwnable wgo = wordGuardManager.getOwnable(region);
 
-        wgo.removeOwner(wgm.wrapPlayer(player));
+        wgo.removeOwner(wordGuardManager.wrapPlayer(player));
 
         try
         {
-            wordGuardManager.saveChanges();
+            wordGuardManager.saveChanges(region);
             return true;
         }
         catch (StorageException e)
@@ -187,7 +185,7 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
 
         try
         {
-            wordGuardManager.saveChanges();
+            wordGuardManager.saveChanges(region);
             return true;
         }
         catch (StorageException e)
@@ -214,7 +212,7 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
 
         try
         {
-            wordGuardManager.saveChanges();
+            wordGuardManager.saveChanges(region);
             return true;
         }
         catch (StorageException e)

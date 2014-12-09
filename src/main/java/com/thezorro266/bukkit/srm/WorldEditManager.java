@@ -52,9 +52,11 @@ public class WorldEditManager
 
     private WorldEdit worldedit;
     private WorldEditPlugin worldEditPlugin;
+    private SimpleRegionMarket thePlugin;
 
-    public void load()
+    public void load(SimpleRegionMarket plug)
     {
+        thePlugin = plug;
         Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin(WORLD_EDIT_PLUGIN_NAME);
 
         if (plugin == null || !(plugin instanceof WorldEditPlugin))
@@ -70,7 +72,7 @@ public class WorldEditManager
 
     public File getSchematicFile(Region region)
     {
-        return new File(new File(new File(new File(SimpleRegionMarket.getInstance().getDataFolder(), TemplateManager.REGIONS_FOLDER), region.getTemplate().getId().toLowerCase()), region.getWorld()
+        return new File(new File(new File(new File(thePlugin.getDataFolder(), TemplateManager.REGIONS_FOLDER), region.getTemplate().getId().toLowerCase()), region.getWorld()
                 .getName()), String.format(REGIONS_SCHEMATIC_FORMAT_STRING, region.getName()));
     }
 
@@ -87,14 +89,14 @@ public class WorldEditManager
             }
             catch (IOException e)
             {
-                SimpleRegionMarket.getInstance().getLogger().warning(MessageFormat.format(LanguageSupport.instance.getString("region.schematic.load.failure"), schematicFile.getPath()));
-                SimpleRegionMarket.getInstance().printError(e);
+                thePlugin.getLogger().warning(MessageFormat.format(LanguageSupport.instance.getString("region.schematic.load.failure"), schematicFile.getPath()));
+                thePlugin.printError(e);
                 return;
             }
             catch (DataException e)
             {
-                SimpleRegionMarket.getInstance().getLogger().warning(MessageFormat.format(LanguageSupport.instance.getString("region.schematic.load.failure"), schematicFile.getPath()));
-                SimpleRegionMarket.getInstance().printError(e);
+                thePlugin.getLogger().warning(MessageFormat.format(LanguageSupport.instance.getString("region.schematic.load.failure"), schematicFile.getPath()));
+                thePlugin.printError(e);
                 return;
             }
 

@@ -19,6 +19,7 @@
 package com.thezorro266.bukkit.srm;
 
 import java.lang.ref.WeakReference;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.bukkit.Bukkit;
@@ -26,9 +27,12 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+
 import com.moogle.MoogleGenericException;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.thezorro266.bukkit.srm.region.Region;
 
@@ -55,11 +59,6 @@ public class WorldGuardManager
         wgo = new WorldGuardOwnable(region);
         ownableMap.put(region, new WeakReference<WorldGuardOwnable>(wgo));
         return wgo;
-    }
-
-    public WorldGuardManager()
-    {
-
     }
 
     public void load()
@@ -119,7 +118,7 @@ public class WorldGuardManager
     {
         if (player != null)
         {
-            return new WorldGuardPlayer(player);
+            return new WorldGuardPlayer(player,SimpleRegionMarket.getInstance());
         }
         return null;
     }
@@ -133,9 +132,10 @@ public class WorldGuardManager
         return null;
     }
 
-    public void saveChanges()
+    public void saveChanges( Region region) throws StorageException
     {
-        // TODO Auto-generated method stub
+        RegionManager mgr = worldguardPlugin.getGlobalRegionManager().get(region.getWorld());
+        mgr.saveChanges();
         
     }
 

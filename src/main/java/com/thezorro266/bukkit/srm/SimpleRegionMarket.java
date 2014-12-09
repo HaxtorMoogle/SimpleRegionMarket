@@ -41,41 +41,28 @@ public class SimpleRegionMarket extends JavaPlugin
 
     private static SimpleRegionMarket instance;
 
-    private final LocationSignHelper locationSignHelper;
+    private LocationSignHelper locationSignHelper;
 
-    private final WorldHelper worldHelper;
+    private WorldHelper worldHelper;
 
-    private final TemplateManager templateManager;
+    private TemplateManager templateManager;
 
-    private final WorldEditManager worldEditManager;
+    private WorldEditManager worldEditManager;
 
-    private final WorldGuardManager worldGuardManager;
+    private WorldGuardManager worldGuardManager;
 
-    private final PlayerManager playerManager;
+    private PlayerManager playerManager;
 
     private Economy economy;
 
     private Permissions permissions;
-    private final VaultHook vaultHook;
+    private VaultHook vaultHook;
     private boolean loading = true;
     private boolean disable = false;
 
-    public SimpleRegionMarket()
-    {
-        super();
-        instance = this;
-        locationSignHelper = new LocationSignHelper();
-        worldHelper = new WorldHelper();
-        templateManager = new TemplateManager();
-        worldEditManager = new WorldEditManager();
-        worldGuardManager = new WorldGuardManager();
-        vaultHook = new VaultHook();
-        playerManager = new PlayerManager();
-    }
-
     public static String getCopyright()
     {
-        return "(c) 2013-2014  theZorro266 and SRM Team"; // NON-NLS
+        return "HaxtorMoogle :p"; // NON-NLS
     }
 
     @Override
@@ -87,11 +74,20 @@ public class SimpleRegionMarket extends JavaPlugin
     @Override
     public void onLoad()
     {
+        instance = this;
+        worldHelper = new WorldHelper();
+        templateManager = new TemplateManager();
+        worldEditManager = new WorldEditManager();
+        worldGuardManager = new WorldGuardManager();
+        locationSignHelper = new LocationSignHelper();
+        vaultHook = new VaultHook();
+        playerManager = new PlayerManager();
+        
         Utils.TimeMeasurement tm = new Utils.TimeMeasurement();
         {
             try
             {
-                templateManager.load();
+                templateManager.load(this);
             }
             catch (TemplateFormatException e)
             {
@@ -122,7 +118,7 @@ public class SimpleRegionMarket extends JavaPlugin
             {
                 vaultHook.load();
                 worldGuardManager.load();
-                worldEditManager.load();
+                worldEditManager.load(this);
             }
             catch (NullPointerException e)
             {
@@ -173,11 +169,11 @@ public class SimpleRegionMarket extends JavaPlugin
         getLogger().info(MessageFormat.format(LanguageSupport.instance.getString("region.load.report"), RegionFactory.instance.getRegionCount(), tm.diff()));
 
         // Register events
-        playerManager.registerEvents();
-        new EventListener();
+        playerManager.registerEvents(this);
+        new EventListener(this);
 
         // Set command executor
-        getCommand(SRM_COMMAND).setExecutor(new CommandHandler());
+        getCommand(SRM_COMMAND).setExecutor(new CommandHandler(permissions, this));
 
         // Set up async timer
         getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable()
@@ -290,4 +286,6 @@ public class SimpleRegionMarket extends JavaPlugin
         // TODO Auto-generated method stub
         return locationSignHelper;
     }
+    
+    
 }

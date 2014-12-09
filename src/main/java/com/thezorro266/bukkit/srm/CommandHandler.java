@@ -34,11 +34,14 @@ import java.util.ArrayList;
 public class CommandHandler implements CommandExecutor
 {
     private Permissions permissions;
+    private SimpleRegionMarket thePlugin;
 
-    public CommandHandler()
+    public CommandHandler(Permissions perms, SimpleRegionMarket plug)
     {
-        SimpleRegionMarket.getInstance().getLogger();
-        this.permissions = SimpleRegionMarket.getInstance().getPermissions();
+       //the fuck?
+        // SimpleRegionMarket.getInstance().getLogger();
+        this.permissions = perms;
+        thePlugin= plug;
     }
 
     @Override
@@ -95,7 +98,7 @@ public class CommandHandler implements CommandExecutor
             if (cmd.equalsIgnoreCase("version") || cmd.equalsIgnoreCase("v"))
             {
                 permissions.checkPermission(sender, "srm.version");
-                String versionString = MessageFormat.format(LanguageSupport.instance.getString("command.version"), SimpleRegionMarket.getInstance().getDescription().getVersion());
+                String versionString = MessageFormat.format(LanguageSupport.instance.getString("command.version"), thePlugin.getDescription().getVersion());
                 String copyrightString = SimpleRegionMarket.getCopyright();
                 sender.sendMessage(ChatColor.YELLOW + String.format("%s, %s", versionString, copyrightString)); // NON-NLS
             }
@@ -135,7 +138,7 @@ public class CommandHandler implements CommandExecutor
                                         Region region = null;
                                         if (player != null)
                                         {
-                                            ArrayList<Region> playerRegions = SimpleRegionMarket.getInstance().getPlayerManager().getPlayerRegions((Player) sender);
+                                            ArrayList<Region> playerRegions = thePlugin.getPlayerManager().getPlayerRegions((Player) sender);
 
                                             if (playerRegions.size() == 1)
                                             {
@@ -151,10 +154,10 @@ public class CommandHandler implements CommandExecutor
                                             if (arguments.length > 2)
                                             {
                                                 regionString = arguments[1];
-                                                region = SimpleRegionMarket.getInstance().getWorldHelper().getRegion(regionString, null);
+                                                region = thePlugin.getWorldHelper().getRegion(regionString, null);
                                                 if (region == null && player != null)
                                                 {
-                                                    region = SimpleRegionMarket.getInstance().getWorldHelper().getRegion(regionString, player.getWorld());
+                                                    region = thePlugin.getWorldHelper().getRegion(regionString, player.getWorld());
                                                 }
                                                 if (region != null)
                                                 {

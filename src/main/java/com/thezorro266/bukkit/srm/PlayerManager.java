@@ -35,19 +35,21 @@ import com.thezorro266.bukkit.srm.templates.interfaces.OwnableTemplate;
 public class PlayerManager implements Listener
 {
     private final ArrayList<RegionOwner> ownerList = new ArrayList<RegionOwner>();
-
-    public void registerEvents()
+    
+    private SimpleRegionMarket thePlugin;
+    public void registerEvents(SimpleRegionMarket plug)
     {
-        SimpleRegionMarket.getInstance().getServer().getPluginManager().registerEvents(this, SimpleRegionMarket.getInstance());
+        thePlugin = plug;
+        thePlugin.getServer().getPluginManager().registerEvents(this, thePlugin);
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event)
     {
         ArrayList<Region> tempRegions = new ArrayList<Region>();
-        synchronized (SimpleRegionMarket.getInstance().getTemplateManager().getTemplateList())
+        synchronized (thePlugin.getTemplateManager().getTemplateList())
         {
-            for (Template template : SimpleRegionMarket.getInstance().getTemplateManager().getTemplateList())
+            for (Template template : thePlugin.getTemplateManager().getTemplateList())
             {
                 if (template instanceof OwnableTemplate)
                 {

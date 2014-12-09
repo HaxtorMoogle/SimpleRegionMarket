@@ -11,15 +11,18 @@ import com.sk89q.worldguard.LocalPlayer;
 public class WorldGuardPlayer extends LocalPlayer
 {
     private OfflinePlayer player;
+    private SimpleRegionMarket thePlugin;
 
-    WorldGuardPlayer(OfflinePlayer player)
+    WorldGuardPlayer(OfflinePlayer player, SimpleRegionMarket plug)
     {
+        
         if (player == null)
         {
             throw new IllegalArgumentException("Player must not be null");
         }
 
         this.player = player;
+        thePlugin = plug;
     }
 
     @Override
@@ -44,7 +47,7 @@ public class WorldGuardPlayer extends LocalPlayer
         }
         else
         {
-            SimpleRegionMarket.getInstance().getLogger().warning(LanguageSupport.instance.getString("worldguard.offlineplayer.getposition"));
+            thePlugin.getLogger().warning(LanguageSupport.instance.getString("worldguard.offlineplayer.getposition"));
             return new Vector(0, 0, 0);
         }
     }
@@ -58,7 +61,7 @@ public class WorldGuardPlayer extends LocalPlayer
         }
         else
         {
-            SimpleRegionMarket.getInstance().getLogger().warning(LanguageSupport.instance.getString("worldguard.offlineplayer.kick"));
+            thePlugin.getLogger().warning(LanguageSupport.instance.getString("worldguard.offlineplayer.kick"));
         }
     }
 
@@ -72,7 +75,7 @@ public class WorldGuardPlayer extends LocalPlayer
         }
         else
         {
-            SimpleRegionMarket.getInstance().getLogger().warning(LanguageSupport.instance.getString("worldguard.offlineplayer.ban"));
+            thePlugin.getLogger().warning(LanguageSupport.instance.getString("worldguard.offlineplayer.ban"));
         }
     }
 
@@ -85,7 +88,7 @@ public class WorldGuardPlayer extends LocalPlayer
         }
         else
         {
-            SimpleRegionMarket.getInstance().getLogger().warning(LanguageSupport.instance.getString("worldguard.offlineplayer.message"));
+            thePlugin.getLogger().warning(LanguageSupport.instance.getString("worldguard.offlineplayer.message"));
         }
     }
 
@@ -100,11 +103,11 @@ public class WorldGuardPlayer extends LocalPlayer
     {
         if (player.isOnline())
         {
-            return SimpleRegionMarket.getInstance().getWorldGuardManager().getWG().hasPermission(player.getPlayer(), perm);
+            return thePlugin.getWorldGuardManager().getWG().hasPermission(player.getPlayer(), perm);
         }
         else
         {
-            SimpleRegionMarket.getInstance().getLogger().warning(LanguageSupport.instance.getString("worldguard.offlineplayer.getpermission"));
+            thePlugin.getLogger().warning(LanguageSupport.instance.getString("worldguard.offlineplayer.getpermission"));
             return true;
         }
     }
