@@ -29,6 +29,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.thezorro266.bukkit.srm.exceptions.ContentLoadException;
 import com.thezorro266.bukkit.srm.exceptions.TemplateFormatException;
 import com.thezorro266.bukkit.srm.factories.RegionFactory;
+import com.thezorro266.bukkit.srm.factories.SignFactory;
 import com.thezorro266.bukkit.srm.helpers.LocationSignHelper;
 import com.thezorro266.bukkit.srm.helpers.WorldHelper;
 import com.thezorro266.bukkit.srm.templates.Template;
@@ -51,9 +52,12 @@ public class SimpleRegionMarket extends JavaPlugin
 
     private WorldGuardManager worldGuardManager;
 
+    private LanguageSupport language;
     private PlayerManager playerManager;
-
+    private SignFactory omgTheSigns;
     private Economy economy;
+    
+    private RegionFactory demRegions;
 
     private Permissions permissions;
     private VaultHook vaultHook;
@@ -65,6 +69,19 @@ public class SimpleRegionMarket extends JavaPlugin
         return "HaxtorMoogle :p"; // NON-NLS
     }
 
+    public SimpleRegionMarket()
+    {
+        vaultHook = new VaultHook();
+        worldEditManager = new WorldEditManager();
+        worldGuardManager = new WorldGuardManager();
+        worldHelper = new WorldHelper();
+        templateManager = new TemplateManager();
+        
+        locationSignHelper = new LocationSignHelper();
+       setLanguage(new LanguageSupport());
+        
+        playerManager = new PlayerManager();
+    }
     @Override
     public void onDisable()
     {
@@ -74,14 +91,6 @@ public class SimpleRegionMarket extends JavaPlugin
     @Override
     public void onLoad()
     {
-        instance = this;
-        worldHelper = new WorldHelper();
-        templateManager = new TemplateManager();
-        worldEditManager = new WorldEditManager();
-        worldGuardManager = new WorldGuardManager();
-        locationSignHelper = new LocationSignHelper();
-        vaultHook = new VaultHook();
-        playerManager = new PlayerManager();
         
         Utils.TimeMeasurement tm = new Utils.TimeMeasurement();
         {
@@ -113,17 +122,26 @@ public class SimpleRegionMarket extends JavaPlugin
     {
         if (!disable)
         {
+            instance = this;
+            
             // Try to load dependencies
             try
             {
+                
                 vaultHook.load();
+                getLogger().info("Vault loaded");
                 worldGuardManager.load();
+                getLogger().info("worldguardmanager loaded");
                 worldEditManager.load(this);
+                getLogger().info("worldEditManager loaded");
             }
             catch (NullPointerException e)
             {
                 except(e);
             }
+            
+           setOmgTheSigns(new SignFactory(this));
+           setDemRegions(new RegionFactory(this));
         }
 
         // Check if the plugin should be disabled because of an exception
@@ -166,7 +184,7 @@ public class SimpleRegionMarket extends JavaPlugin
             }
         }
 
-        getLogger().info(MessageFormat.format(LanguageSupport.instance.getString("region.load.report"), RegionFactory.instance.getRegionCount(), tm.diff()));
+        getLogger().info(MessageFormat.format(LanguageSupport.instance.getString("region.load.report"), demRegions.getRegionCount(), tm.diff()));
 
         // Register events
         playerManager.registerEvents(this);
@@ -285,6 +303,36 @@ public class SimpleRegionMarket extends JavaPlugin
     {
         // TODO Auto-generated method stub
         return locationSignHelper;
+    }
+
+    public SignFactory getOmgTheSigns()
+    {
+        return omgTheSigns;
+    }
+
+    public void setOmgTheSigns(SignFactory omgTheSigns)
+    {
+        this.omgTheSigns = omgTheSigns;
+    }
+
+    public LanguageSupport getLanguage()
+    {
+        return language;
+    }
+
+    public void setLanguage(LanguageSupport language)
+    {
+        this.language = language;
+    }
+
+    public RegionFactory getDemRegions()
+    {
+        return demRegions;
+    }
+
+    public void setDemRegions(RegionFactory demRegions)
+    {
+        this.demRegions = demRegions;
     }
     
     

@@ -30,7 +30,6 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.thezorro266.bukkit.srm.exceptions.ContentSaveException;
-import com.thezorro266.bukkit.srm.factories.SignFactory;
 import com.thezorro266.bukkit.srm.helpers.Location;
 import com.thezorro266.bukkit.srm.templates.Template;
 
@@ -50,7 +49,7 @@ public class EventListener implements Listener
         if (!event.isCancelled())
         {
             Player player = event.getPlayer();
-            Sign sign = SignFactory.instance.getSignFromLocation(Location.fromBlock(event.getBlock()));
+            Sign sign = thePlugin.getOmgTheSigns().getSignFromLocation(Location.fromBlock(event.getBlock()));
             if (sign != null)
             {
                 if (!sign.getRegion().getTemplate().breakSign(player, sign))
@@ -82,7 +81,7 @@ public class EventListener implements Listener
     {
         if (!event.isCancelled())
         {
-            Sign sign = SignFactory.instance.getSignFromLocation(Location.fromBlock(event.getBlock()));
+            Sign sign = thePlugin.getOmgTheSigns().getSignFromLocation(Location.fromBlock(event.getBlock()));
             if (sign != null)
             {
                 if (sign.getRegion().getTemplate().breakSign(event.getPlayer(), sign))
@@ -113,11 +112,11 @@ public class EventListener implements Listener
     {
         if (event.hasBlock())
         {
-            if (SignFactory.instance.isSign(event.getClickedBlock()))
+            if (thePlugin.getOmgTheSigns().isSign(event.getClickedBlock()))
             {
                 if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
                 {
-                    Sign sign = SignFactory.instance.getSignFromLocation(Location.fromBlock(event.getClickedBlock()));
+                    Sign sign = thePlugin.getOmgTheSigns().getSignFromLocation(Location.fromBlock(event.getClickedBlock()));
                     if (sign != null)
                     {
                         sign.getRegion().getTemplate().clickSign(event.getPlayer(), sign);

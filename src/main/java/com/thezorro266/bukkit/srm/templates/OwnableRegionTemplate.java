@@ -30,12 +30,12 @@ import com.thezorro266.bukkit.srm.templates.interfaces.OwnableTemplate;
 
 public abstract class OwnableRegionTemplate extends SignTemplate implements OwnableTemplate
 {
-    protected SimpleRegionMarket thePlugin;
+    private SimpleRegionMarket thePlugin;
     private WorldGuardManager wordGuardManager;
     
     public OwnableRegionTemplate(ConfigurationSection templateConfigSection, SimpleRegionMarket ThePlugin)
     {
-        super(templateConfigSection);
+        super(templateConfigSection, ThePlugin);
         thePlugin = ThePlugin;
         wordGuardManager = thePlugin.getWorldGuardManager();
     }

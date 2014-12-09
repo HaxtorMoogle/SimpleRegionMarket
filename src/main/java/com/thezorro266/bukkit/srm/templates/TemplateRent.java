@@ -36,10 +36,12 @@ import java.text.MessageFormat;
 
 public class TemplateRent extends TemplateLease
 {
+    private SimpleRegionMarket thePlugin;
     public TemplateRent(ConfigurationSection templateConfigSection, SimpleRegionMarket thisPlugin)
     {
         super(templateConfigSection, thisPlugin);
         setType("rent");
+        thePlugin = thisPlugin;
     }
 
     @Override

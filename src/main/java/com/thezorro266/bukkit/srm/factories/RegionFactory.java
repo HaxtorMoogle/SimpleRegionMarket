@@ -38,19 +38,20 @@ import com.thezorro266.bukkit.srm.templates.Template;
 
 public class RegionFactory
 {
-    public static final RegionFactory instance = new RegionFactory();
+   // public static final RegionFactory instance = new RegionFactory(thePlugin);
 
    
     private int regionCount = 0;
-
-    RegionFactory()
+    static SimpleRegionMarket thePlugin;
+    public RegionFactory(SimpleRegionMarket plug)
     {
+        thePlugin = plug;
     }
 
     public static ProtectedRegion getProtectedRegionFromLocation(Location loc, String region)
     {
         ProtectedRegion protectedRegion = null;
-        final RegionManager worldRegionManager = SimpleRegionMarket.getInstance().getWorldGuardManager().getWG().getRegionManager(loc.getWorld());
+        final RegionManager worldRegionManager = thePlugin.getWorldGuardManager().getWG().getRegionManager(loc.getWorld());
         if (region == null)
         {
             ApplicableRegionSet regionSet = worldRegionManager.getApplicableRegions(loc.getBukkitLocation());
@@ -79,7 +80,7 @@ public class RegionFactory
         {
             template.getRegionList().add(region);
         }
-        SimpleRegionMarket.getInstance().getWorldHelper().putRegion(region, world);
+        thePlugin.getWorldHelper().putRegion(region, world);
 
         ++regionCount;
 
@@ -94,7 +95,7 @@ public class RegionFactory
             for (Sign sign : signArray)
             {
                 sign.clear();
-                SignFactory.instance.destroySign(sign);
+                thePlugin.getOmgTheSigns().destroySign(sign);
             }
         }
 
@@ -108,9 +109,9 @@ public class RegionFactory
 
     public void loadFromConfiguration(Configuration config, String path) throws ContentLoadException
     {
-        Template template = SimpleRegionMarket.getInstance().getTemplateManager().getTemplateFromId(config.getString(path + "template_id"));
+        Template template = thePlugin.getTemplateManager().getTemplateFromId(config.getString(path + "template_id"));
         World world = Bukkit.getWorld(config.getString(path + "world"));
-        ProtectedRegion worldguardRegion = SimpleRegionMarket.getInstance().getWorldGuardManager().getProtectedRegion(world, config.getString(path + "worldguard_region"));
+        ProtectedRegion worldguardRegion = thePlugin.getWorldGuardManager().getProtectedRegion(world, config.getString(path + "worldguard_region"));
 
         Region region;
         try
@@ -143,7 +144,7 @@ public class RegionFactory
             {
                 try
                 {
-                    SignFactory.instance.loadFromConfiguration(config, region, path + String.format("signs.%s.", signKey));
+                    thePlugin.getOmgTheSigns().loadFromConfiguration(config, region, path + String.format("signs.%s.", signKey));
                 }
                 catch (IllegalArgumentException e)
                 {

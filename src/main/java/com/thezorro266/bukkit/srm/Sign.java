@@ -94,7 +94,7 @@ public class Sign
     private boolean isSign(Block block)
     {
         // TODO Auto-generated method stub
-        if((block.getType() == Material.SIGN)||(block.getType()== Material.SIGN_POST))
+        if((block.getType() == Material.SIGN))
         {
             return true;
         }

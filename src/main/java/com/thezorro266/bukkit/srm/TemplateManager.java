@@ -37,7 +37,6 @@ import com.thezorro266.bukkit.srm.exceptions.ContentLoadException;
 import com.thezorro266.bukkit.srm.exceptions.ContentSaveException;
 import com.thezorro266.bukkit.srm.exceptions.TemplateFormatException;
 import com.thezorro266.bukkit.srm.exceptions.ThisShouldNeverHappenException;
-import com.thezorro266.bukkit.srm.factories.RegionFactory;
 import com.thezorro266.bukkit.srm.region.Region;
 import com.thezorro266.bukkit.srm.templates.Template;
 import com.thezorro266.bukkit.srm.templates.TemplateRent;
@@ -77,7 +76,7 @@ public class TemplateManager
                         {
                             if (templateYaml.isSet(templateId + ".type"))
                             {
-                                Template template = Template.load(templateYaml.getConfigurationSection(templateId));
+                                Template template = Template.load(templateYaml.getConfigurationSection(templateId), thePlugin);
                                 if (templateList.contains(template))
                                 {
                                     throw new TemplateFormatException("Duplicate id in templates configuration file");
@@ -495,7 +494,7 @@ public class TemplateManager
                                         // Let the RegionFactory do the rest
                                         try
                                         {
-                                            RegionFactory.instance.loadFromConfiguration(regionConfig, "");
+                                            thePlugin.getDemRegions().loadFromConfiguration(regionConfig, "");
                                         }
                                         catch (ContentLoadException e)
                                         {

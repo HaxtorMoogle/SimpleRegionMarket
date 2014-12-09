@@ -45,16 +45,23 @@ public abstract class Template
 
     private String type = TYPE_UNKNOWN;
 
+    private static SimpleRegionMarket thePlugin;
     protected List<Region> regionList = new ArrayList<Region>();
 
-    public Template(ConfigurationSection templateConfigSection)
+    public Template(ConfigurationSection templateConfigSection, SimpleRegionMarket plug)
     {
+        thePlugin = plug;
         id = templateConfigSection.getName();
         setType(TYPE_UNKNOWN);
     }
 
-    public static Template load(ConfigurationSection templateConfigSection) throws TemplateFormatException
+    public SimpleRegionMarket GetTheFuckingPlugin()
     {
+        return thePlugin;
+    }
+    public static Template load(ConfigurationSection templateConfigSection, SimpleRegionMarket plug) throws TemplateFormatException
+    {
+        thePlugin = plug;
         String id = templateConfigSection.getName();
         if (templateConfigSection.isSet("type"))
         {
@@ -81,7 +88,7 @@ public abstract class Template
             Template template;
             try
             {
-                template = Template.class.cast(templateClass.getConstructor(new Class[] { ConfigurationSection.class }).newInstance(templateConfigSection));
+                template = Template.class.cast(templateClass.getConstructor(new Class[] { ConfigurationSection.class }).newInstance(templateConfigSection, thePlugin));
             }
             catch (IllegalArgumentException e)
             {

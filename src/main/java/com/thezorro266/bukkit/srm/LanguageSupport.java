@@ -30,7 +30,7 @@ public final class LanguageSupport
     private Locale locale;
     private ResourceBundle languageResource;
 
-    private LanguageSupport()
+    LanguageSupport()
     {
         // Load English as default
         load(STANDARD_LANGUAGE);

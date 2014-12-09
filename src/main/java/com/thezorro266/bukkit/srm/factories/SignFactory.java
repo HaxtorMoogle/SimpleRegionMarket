@@ -31,23 +31,24 @@ import com.thezorro266.bukkit.srm.Sign;
 import com.thezorro266.bukkit.srm.SimpleRegionMarket;
 import com.thezorro266.bukkit.srm.exceptions.ContentLoadException;
 import com.thezorro266.bukkit.srm.helpers.Location;
-import com.thezorro266.bukkit.srm.helpers.Options;
 import com.thezorro266.bukkit.srm.region.Region;
 
 public class SignFactory
 {
-    public static final SignFactory instance = new SignFactory();
+    //public static final SignFactory instance = new SignFactory(thePlugin);
 
     private int signCount = 0;
 
-    private SignFactory()
+    SimpleRegionMarket thePlugin;
+    public SignFactory(SimpleRegionMarket plug)
     {
+        thePlugin=plug;
     }
 
     public Sign createSign(Region region, Location location, boolean isWallSign, BlockFace direction)
     {
         // Check for sign on location
-        Sign oldSign = SimpleRegionMarket.getInstance().getLocationSignHelper().getSign(location);
+        Sign oldSign = thePlugin.getLocationSignHelper().getSign(location);
         if (oldSign != null)
         {
             throw new IllegalArgumentException("Location already has a sign");
@@ -57,7 +58,7 @@ public class SignFactory
         Sign sign = new Sign(region, location, isWallSign, direction);
 
         region.getSignList().add(sign);
-        SimpleRegionMarket.getInstance().getLocationSignHelper().addSignAndLocation(sign);
+        thePlugin.getLocationSignHelper().addSignAndLocation(sign);
 
         setSignCount(getSignCount() + 1);
 
@@ -67,7 +68,7 @@ public class SignFactory
     public void destroySign(Sign sign)
     {
         sign.getRegion().getSignList().remove(sign);
-        SimpleRegionMarket.getInstance().getLocationSignHelper().removeSignAndLocation(sign);
+        thePlugin.getLocationSignHelper().removeSignAndLocation(sign);
 
         setSignCount(getSignCount() - 1);
     }
@@ -79,7 +80,7 @@ public class SignFactory
 
     public Sign getSignFromLocation(Location location)
     {
-        return SimpleRegionMarket.getInstance().getLocationSignHelper().getSign(location);
+        return thePlugin.getLocationSignHelper().getSign(location);
     }
 
     public void loadFromConfiguration(Configuration config, Region region, String path) throws ContentLoadException

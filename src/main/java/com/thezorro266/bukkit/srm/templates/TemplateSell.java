@@ -24,12 +24,6 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.thezorro266.bukkit.srm.exceptions.NotEnoughPermissionsException;
-import com.thezorro266.bukkit.srm.hooks.Economy;
-import com.thezorro266.bukkit.srm.hooks.Permissions;
-import com.thezorro266.bukkit.srm.region.Region;
-import com.thezorro266.bukkit.srm.templates.interfaces.OwnableTemplate;
-
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
@@ -42,9 +36,13 @@ import com.thezorro266.bukkit.srm.LanguageSupport;
 import com.thezorro266.bukkit.srm.Sign;
 import com.thezorro266.bukkit.srm.SimpleRegionMarket;
 import com.thezorro266.bukkit.srm.exceptions.ContentSaveException;
+import com.thezorro266.bukkit.srm.exceptions.NotEnoughPermissionsException;
 import com.thezorro266.bukkit.srm.factories.RegionFactory;
-import com.thezorro266.bukkit.srm.factories.SignFactory;
 import com.thezorro266.bukkit.srm.helpers.Location;
+import com.thezorro266.bukkit.srm.hooks.Economy;
+import com.thezorro266.bukkit.srm.hooks.Permissions;
+import com.thezorro266.bukkit.srm.region.Region;
+import com.thezorro266.bukkit.srm.templates.interfaces.OwnableTemplate;
 
 public class TemplateSell extends OwnableRegionTemplate
 {
@@ -53,11 +51,12 @@ public class TemplateSell extends OwnableRegionTemplate
     protected boolean removeSigns = true;
     protected boolean buyerIsOwner = true;
     protected boolean regionReset = false;
+    private SimpleRegionMarket thePlugin;
 
     public TemplateSell(ConfigurationSection templateConfigSection, SimpleRegionMarket thisPlugin)
     {
         super(templateConfigSection, thisPlugin);
-
+        thePlugin = thisPlugin;
         setType("sell");
 
         if (templateConfigSection.contains("price.min"))
@@ -172,7 +171,7 @@ public class TemplateSell extends OwnableRegionTemplate
                 { // NON-NLS
                     ((OwnableTemplate) region.getTemplate()).clearRegion(region);
                     thePlugin.getTemplateManager().removeRegion(region);
-                    RegionFactory.instance.destroyRegion(region);
+                    thePlugin.getDemRegions().destroyRegion(region);
                     sender.sendMessage(MessageFormat.format(LanguageSupport.instance.getString("region.in.world.removed"), region, region.getWorld()));
                 }
                 else
@@ -201,7 +200,7 @@ public class TemplateSell extends OwnableRegionTemplate
     {
         if (sign.getRegion().getSignList().size() > 1 || removeSigns)
         {
-            SignFactory.instance.destroySign(sign);
+            thePlugin.getOmgTheSigns().destroySign(sign);
             return true;
         }
         else
@@ -319,7 +318,7 @@ public class TemplateSell extends OwnableRegionTemplate
 
             if (region == null)
             {
-                region = RegionFactory.instance.createRegion(this, block.getWorld(), worldguardRegion);
+                region = thePlugin.getDemRegions().createRegion(this, block.getWorld(), worldguardRegion);
 
                 if (SimpleRegionMarket.getInstance().getEconomy().isEnabled())
                 {

@@ -19,7 +19,6 @@
 package com.thezorro266.bukkit.srm;
 
 import java.lang.ref.WeakReference;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.bukkit.Bukkit;

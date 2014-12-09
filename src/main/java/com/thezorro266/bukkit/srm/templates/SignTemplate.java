@@ -30,6 +30,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import com.thezorro266.bukkit.srm.Sign;
+import com.thezorro266.bukkit.srm.SimpleRegionMarket;
 import com.thezorro266.bukkit.srm.helpers.Location;
 import com.thezorro266.bukkit.srm.region.Region;
 
@@ -38,9 +39,10 @@ public abstract class SignTemplate extends Template
     protected final String[] signInput = new String[Sign.SIGN_LINE_COUNT];
     protected final HashMap<String, String[]> signOutput = new HashMap<String, String[]>();
 
-    public SignTemplate(ConfigurationSection templateConfigSection)
+    
+    public SignTemplate(ConfigurationSection templateConfigSection, SimpleRegionMarket plug)
     {
-        super(templateConfigSection);
+        super(templateConfigSection,plug);
         for (int i = 0; i < Sign.SIGN_LINE_COUNT; i++)
         {
             signInput[i] = templateConfigSection.getString("input." + (i + 1));

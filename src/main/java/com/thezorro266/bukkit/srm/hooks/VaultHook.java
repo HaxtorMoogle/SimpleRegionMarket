@@ -20,6 +20,7 @@ package com.thezorro266.bukkit.srm.hooks;
 
 import com.thezorro266.bukkit.srm.LanguageSupport;
 import net.milkbowl.vault.Vault;
+
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
@@ -35,12 +36,12 @@ public class VaultHook
 
         if (plugin == null || !(plugin instanceof Vault))
         {
-            plugin.getLogger().info(LanguageSupport.instance.getString("vault.notfound"));
+            Bukkit.getLogger().info(LanguageSupport.instance.getString("vault.notfound"));
             vaultEnabled = false;
         }
         else
         {
-            plugin.getLogger().info(LanguageSupport.instance.getString("vault.found"));
+           Bukkit.getLogger().info(LanguageSupport.instance.getString("vault.found"));
             vaultEnabled = true;
         }
     }

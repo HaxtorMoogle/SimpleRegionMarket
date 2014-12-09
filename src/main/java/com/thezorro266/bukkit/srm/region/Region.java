@@ -12,7 +12,7 @@ import org.bukkit.configuration.Configuration;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.thezorro266.bukkit.srm.Sign;
-import com.thezorro266.bukkit.srm.factories.SignFactory;
+import com.thezorro266.bukkit.srm.SimpleRegionMarket;
 import com.thezorro266.bukkit.srm.helpers.Location;
 import com.thezorro266.bukkit.srm.helpers.Options;
 import com.thezorro266.bukkit.srm.templates.SignTemplate;
@@ -30,6 +30,7 @@ public class Region
     private ArrayList<Sign> signList;
 
     private Options options;
+    SimpleRegionMarket thePlugin;
 
     public Region(Template template, World world, ProtectedRegion worldguardRegion)
     {
@@ -46,6 +47,7 @@ public class Region
             throw new IllegalArgumentException("WorldGuard region must not be null");
         }
 
+        thePlugin = template.GetTheFuckingPlugin();
         this.template = template;
         this.world = world;
         this.worldguardRegion = worldguardRegion;
@@ -72,10 +74,10 @@ public class Region
 
     public Sign addBlockAsSign(Block block)
     {
-        if (SignFactory.instance.isSign(block))
+        if (thePlugin.getOmgTheSigns().isSign(block))
         {
             org.bukkit.material.Sign signMat = (org.bukkit.material.Sign) block.getState().getData();
-            return SignFactory.instance.createSign(this, Location.fromBlock(block), block.getType().equals(Material.WALL_SIGN), signMat.getFacing());
+            return thePlugin.getOmgTheSigns().createSign(this, Location.fromBlock(block), block.getType().equals(Material.WALL_SIGN), signMat.getFacing());
         }
         return null;
     }

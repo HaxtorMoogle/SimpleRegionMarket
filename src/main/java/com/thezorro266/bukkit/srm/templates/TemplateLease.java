@@ -38,7 +38,6 @@ import com.thezorro266.bukkit.srm.SimpleRegionMarket;
 import com.thezorro266.bukkit.srm.Utils;
 import com.thezorro266.bukkit.srm.exceptions.ContentSaveException;
 import com.thezorro266.bukkit.srm.factories.RegionFactory;
-import com.thezorro266.bukkit.srm.factories.SignFactory;
 import com.thezorro266.bukkit.srm.helpers.Location;
 import com.thezorro266.bukkit.srm.region.Region;
 import com.thezorro266.bukkit.srm.templates.interfaces.TimedTemplate;
@@ -47,12 +46,12 @@ public class TemplateLease extends TemplateSell implements TimedTemplate
 {
     protected int minTime = 60;
     protected int maxTime = -1;
-    
+    private SimpleRegionMarket thePlugin;
 
-    public TemplateLease(ConfigurationSection templateConfigSection, SimpleRegionMarket thePlugin)
+    public TemplateLease(ConfigurationSection templateConfigSection, SimpleRegionMarket thePlug)
     {
-        super(templateConfigSection, thePlugin);
-
+        super(templateConfigSection, thePlug);
+        thePlugin = thePlug;
         setType("lease");
 
         if (templateConfigSection.contains("renttime.min"))
@@ -273,7 +272,7 @@ public class TemplateLease extends TemplateSell implements TimedTemplate
 
             if (region == null)
             {
-                region = RegionFactory.instance.createRegion(this, block.getWorld(), worldguardRegion);
+                region = thePlugin.getDemRegions().createRegion(this, block.getWorld(), worldguardRegion);
 
                 if (thePlugin.getEconomy().isEnabled())
                 {
