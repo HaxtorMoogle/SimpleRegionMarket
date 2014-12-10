@@ -23,8 +23,11 @@ import java.text.MessageFormat;
 import java.util.logging.Level;
 
 import com.thezorro266.bukkit.srm.hooks.*;
+
 import lombok.Getter;
+
 import org.bukkit.plugin.java.JavaPlugin;
+
 import com.thezorro266.bukkit.srm.exceptions.ContentLoadException;
 import com.thezorro266.bukkit.srm.exceptions.TemplateFormatException;
 import com.thezorro266.bukkit.srm.factories.RegionFactory;
@@ -37,30 +40,31 @@ public class SimpleRegionMarket extends JavaPlugin {
 	private static final boolean PRINT_STACKTRACE = false;
 	public static final String SRM_COMMAND = "regionmarket"; //NON-NLS
 	@Getter
-	private static SimpleRegionMarket instance = null;
+	private static SimpleRegionMarket instance;
 	@Getter
-	private final LocationSignHelper locationSignHelper;
+	private LocationSignHelper locationSignHelper;
 	@Getter
-	private final WorldHelper worldHelper;
+	private WorldHelper worldHelper;
 	@Getter
-	private final TemplateManager templateManager;
+	private TemplateManager templateManager;
 	@Getter
-	private final WorldEditManager worldEditManager;
+	private WorldEditManager worldEditManager;
 	@Getter
-	private final WorldGuardManager worldGuardManager;
+	private WorldGuardManager worldGuardManager;
 	@Getter
-	private final PlayerManager playerManager;
+	private PlayerManager playerManager;
 	@Getter
 	private Economy economy;
 	@Getter
 	private Permissions permissions;
 	private final VaultHook vaultHook;
+	private EventListener el;
 	private boolean loading = true;
 	private boolean disable = false;
 
 	public SimpleRegionMarket() {
 		super();
-		instance = this;
+		
 		locationSignHelper = new LocationSignHelper();
 		worldHelper = new WorldHelper();
 		templateManager = new TemplateManager();
@@ -104,7 +108,9 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+	    instance = this;
 		if (!disable) {
+		    locationSignHelper = new LocationSignHelper();
 			// Try to load dependencies
 			try {
 				vaultHook.load();
@@ -114,7 +120,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 				except(e);
 			}
 		}
-
+		onLoad();
 		// Check if the plugin should be disabled because of an exception
 		if (disable) {
 			getPluginLoader().disablePlugin(this);
@@ -149,10 +155,10 @@ public class SimpleRegionMarket extends JavaPlugin {
 		getLogger().info(
 			MessageFormat.format(LanguageSupport.instance.getString("region.load.report"),
 					RegionFactory.instance.getRegionCount(), tm.diff()));
-
+		el = new EventListener(this);
 		// Register events
 		playerManager.registerEvents();
-		new EventListener();
+		//new EventListener();
 
 		// Set command executor
 		getCommand(SRM_COMMAND).setExecutor(new CommandHandler());
@@ -203,4 +209,58 @@ public class SimpleRegionMarket extends JavaPlugin {
 			}
 		}
 	}
+
+    public static SimpleRegionMarket getInstance()
+    {
+        // TODO Auto-generated method stub
+        return instance;
+    }
+
+    public TemplateManager getTemplateManager()
+    {
+        // TODO Auto-generated method stub
+        return  templateManager;
+    }
+
+    public WorldGuardManager getWorldGuardManager()
+    {
+        // TODO Auto-generated method stub
+        return worldGuardManager;
+    }
+
+    public WorldHelper getWorldHelper()
+    {
+        // TODO Auto-generated method stub
+        return worldHelper;
+    }
+
+    public WorldEditManager getWorldEditManager()
+    {
+        // TODO Auto-generated method stub
+        return worldEditManager;
+    }
+
+    public PlayerManager getPlayerManager()
+    {
+        // TODO Auto-generated method stub
+        return playerManager;
+    }
+
+    public Permissions getPermissions()
+    {
+        // TODO Auto-generated method stub
+        return permissions;
+    }
+
+    public LocationSignHelper getLocationSignHelper()
+    {
+        // TODO Auto-generated method stub
+        return locationSignHelper;
+    }
+
+    public Economy getEconomy()
+    {
+        // TODO Auto-generated method stub
+        return economy;
+    }
 }

@@ -20,7 +20,8 @@ package com.thezorro266.bukkit.srm.templates;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
-import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
+
+import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.thezorro266.bukkit.srm.SimpleRegionMarket;
 import com.thezorro266.bukkit.srm.WorldGuardManager;
 import com.thezorro266.bukkit.srm.factories.RegionFactory;
@@ -65,12 +66,17 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
 			wgo.addOwner(wgm.wrapPlayer(player));
 		}
 
-		try {
-			wgo.saveChanges();
-			return true;
-		} catch (ProtectionDatabaseException e) {
-			return false;
-		}
+		try
+	            {
+	                wgo.saveChanges();
+	                return true;
+	            }
+	            catch (StorageException e)
+	            {
+	                // TODO Auto-generated catch block
+	                e.printStackTrace();
+	                return false;
+	            }
 	}
 
 	@Override
@@ -83,12 +89,17 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
 			wgo.addMember(wgm.wrapPlayer(player));
 		}
 
-		try {
-			wgo.saveChanges();
-			return true;
-		} catch (ProtectionDatabaseException e) {
-			return false;
-		}
+		try
+	            {
+	                wgo.saveChanges();
+	                return true;
+	            }
+	            catch (StorageException e)
+	            {
+	                // TODO Auto-generated catch block
+	                e.printStackTrace();
+	                return false;
+	            }
 	}
 
 	@Override
@@ -98,12 +109,17 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
 
 		wgo.addOwner(wgm.wrapPlayer(player));
 
-		try {
-			wgo.saveChanges();
-			return true;
-		} catch (ProtectionDatabaseException e) {
-			return false;
-		}
+		try
+	            {
+	                wgo.saveChanges();
+	                return true;
+	            }
+	            catch (StorageException e)
+	            {
+	                // TODO Auto-generated catch block
+	                e.printStackTrace();
+	                return false;
+	            }
 	}
 
 	@Override
@@ -113,12 +129,17 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
 
 		wgo.addMember(wgm.wrapPlayer(player));
 
-		try {
-			wgo.saveChanges();
-			return true;
-		} catch (ProtectionDatabaseException e) {
-			return false;
-		}
+		try
+	            {
+	                wgo.saveChanges();
+	                return true;
+	            }
+	            catch (StorageException e)
+	            {
+	                // TODO Auto-generated catch block
+	                e.printStackTrace();
+	                return false;
+	            }
 	}
 
 	@Override
@@ -128,12 +149,17 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
 
 		wgo.removeOwner(wgm.wrapPlayer(player));
 
-		try {
-			wgo.saveChanges();
-			return true;
-		} catch (ProtectionDatabaseException e) {
-			return false;
-		}
+		try
+	            {
+	                wgo.saveChanges();
+	                return true;
+	            }
+	            catch (StorageException e)
+	            {
+	                // TODO Auto-generated catch block
+	                e.printStackTrace();
+	                return false;
+	            }
 	}
 
 	@Override
@@ -143,12 +169,17 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
 
 		wgo.removeMember(wgm.wrapPlayer(player));
 
-		try {
-			wgo.saveChanges();
-			return true;
-		} catch (ProtectionDatabaseException e) {
-			return false;
-		}
+		try
+	            {
+	                wgo.saveChanges();
+	                return true;
+	            }
+	            catch (StorageException e)
+	            {
+	                // TODO Auto-generated catch block
+	                e.printStackTrace();
+	                return false;
+	            }
 	}
 
 	@Override
@@ -164,11 +195,19 @@ public abstract class OwnableRegionTemplate extends SignTemplate implements Owna
 		wgo.removeAllMembers();
 		wgo.removeAllOwners();
 
-		try {
-			wgo.saveChanges();
-			return true;
-		} catch (ProtectionDatabaseException e) {
-			return false;
-		}
+		
+	    try
+            {
+                wgo.saveChanges();
+                return true;
+            }
+            catch (StorageException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return false;
+            }
+			
+		
 	}
 }

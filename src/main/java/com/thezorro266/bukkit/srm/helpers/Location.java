@@ -91,4 +91,10 @@ class Location {
 	public String toString() {
 		return String.format("Location[w:%s,c:(%d,%d,%d)]", world.getName(), x, y, z);
 	}
+
+    public World getWorld()
+    {
+        // TODO Auto-generated method stub
+        return world;
+    }
 }

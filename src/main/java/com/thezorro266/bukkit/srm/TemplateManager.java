@@ -533,4 +533,10 @@ public class TemplateManager {
 			throw new ContentSaveException(region, e);
 		}
 	}
+
+    public List<Template> getTemplateList()
+    {
+        // TODO Auto-generated method stub
+        return templateList;
+    }
 }
