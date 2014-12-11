@@ -200,7 +200,7 @@ public class TemplateSell extends OwnableRegionTemplate
     {
         if (sign.getRegion().getSignList().size() > 1 || removeSigns)
         {
-            SignFactory.instance.destroySign(sign);
+            SimpleRegionMarket.getInstance().getSignFactory().destroySign(sign);
             return true;
         }
         else

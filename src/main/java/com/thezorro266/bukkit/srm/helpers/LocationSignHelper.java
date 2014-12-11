@@ -23,8 +23,8 @@ import com.thezorro266.bukkit.srm.factories.SignFactory.Sign;
 
 public class LocationSignHelper
 {
-    private final ArrayList<Sign> signList = new ArrayList<Sign>();
-    private final ArrayList<Location> locationList = new ArrayList<Location>();
+    private ArrayList<Sign> signList = new ArrayList<Sign>();
+    private ArrayList<Location> locationList = new ArrayList<Location>();
     public LocationSignHelper()
     {
         
@@ -42,6 +42,18 @@ public class LocationSignHelper
         {
             return null;
         }
+    }
+    public String SignsStored()
+    {
+        String info = "";
+        int signcount =0;
+        for(Sign s : signList)
+        {
+            info += s.getLocation().toString()+ ", ";
+            signcount++;
+        }
+        return ("signs: "+ signcount+ "locations: "+ info);
+        
     }
 
     public void addSignAndLocation(Sign sign)

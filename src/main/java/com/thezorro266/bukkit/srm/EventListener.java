@@ -49,7 +49,7 @@ public class EventListener implements Listener
         if (!event.isCancelled())
         {
             Player player = event.getPlayer();
-            Sign sign = SignFactory.instance.getSignFromLocation(Location.fromBlock(event.getBlock()));
+            Sign sign = thePlugin.getSignFactory().getSignFromLocation(Location.fromBlock(event.getBlock()));
             if (sign != null)
             {
                 if (!sign.getRegion().getTemplate().breakSign(player, sign))
@@ -81,7 +81,7 @@ public class EventListener implements Listener
     {
         if (!event.isCancelled())
         {
-            Sign sign = SignFactory.instance.getSignFromLocation(Location.fromBlock(event.getBlock()));
+            Sign sign = thePlugin.getSignFactory().getSignFromLocation(Location.fromBlock(event.getBlock()));
             if (sign != null)
             {
                 if (sign.getRegion().getTemplate().breakSign(event.getPlayer(), sign))
@@ -113,13 +113,16 @@ public class EventListener implements Listener
         if (event.hasBlock())
         {
            
-            if (SignFactory.instance.isSign(event.getClickedBlock()))
+            if (thePlugin.getSignFactory().isSign(event.getClickedBlock()))
             {
                
                 if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
                 {
                     event.getPlayer().sendMessage("you right clicked a sign");
                     event.getPlayer().sendMessage(event.getClickedBlock().getType().name());
+                    Location loc = Location.fromBlock(event.getClickedBlock());
+                    event.getPlayer().sendMessage(loc.toString());
+                    event.getPlayer().sendMessage(thePlugin.getLocationSignHelper().SignsStored());
                     Sign sign = thePlugin.getLocationSignHelper().getSign(Location.fromBlock(event.getClickedBlock()));
                     event.getPlayer().sendMessage(sign.toString());
                     if (sign != null)

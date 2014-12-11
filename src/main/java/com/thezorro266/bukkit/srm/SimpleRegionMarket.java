@@ -31,184 +31,228 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.thezorro266.bukkit.srm.exceptions.ContentLoadException;
 import com.thezorro266.bukkit.srm.exceptions.TemplateFormatException;
 import com.thezorro266.bukkit.srm.factories.RegionFactory;
+import com.thezorro266.bukkit.srm.factories.SignFactory;
 import com.thezorro266.bukkit.srm.helpers.LocationSignHelper;
 import com.thezorro266.bukkit.srm.helpers.WorldHelper;
 import com.thezorro266.bukkit.srm.templates.Template;
 import com.thezorro266.bukkit.srm.templates.interfaces.TimedTemplate;
 
-public class SimpleRegionMarket extends JavaPlugin {
-	private static final boolean PRINT_STACKTRACE = false;
-	public static final String SRM_COMMAND = "regionmarket"; //NON-NLS
-	@Getter
-	private static SimpleRegionMarket instance;
-	@Getter
-	private LocationSignHelper locationSignHelper;
-	@Getter
-	private WorldHelper worldHelper;
-	@Getter
-	private TemplateManager templateManager;
-	@Getter
-	private WorldEditManager worldEditManager;
-	@Getter
-	private WorldGuardManager worldGuardManager;
-	@Getter
-	private PlayerManager playerManager;
-	@Getter
-	private Economy economy;
-	@Getter
-	private Permissions permissions;
-	private final VaultHook vaultHook;
-	private EventListener el;
-	private boolean loading = true;
-	private boolean disable = false;
+public class SimpleRegionMarket extends JavaPlugin
+{
+    private static final boolean PRINT_STACKTRACE = false;
+    public static final String SRM_COMMAND = "regionmarket"; // NON-NLS
+    @Getter
+    private static SimpleRegionMarket instance;
+    @Getter
+    private LocationSignHelper locationSignHelper;
+    @Getter
+    private WorldHelper worldHelper;
+    @Getter
+    private TemplateManager templateManager;
+    @Getter
+    private WorldEditManager worldEditManager;
+    @Getter
+    private WorldGuardManager worldGuardManager;
+    @Getter
+    private PlayerManager playerManager;
+    @Getter
+    private Economy economy;
+    @Getter
+    private SignFactory signFactory;
+    @Getter
+    private RegionFactory regionFactory;
+    @Getter
+    private Permissions permissions;
+    private final VaultHook vaultHook;
+    private EventListener el;
+    private boolean loading = true;
+    private boolean disable = false;
 
-	public SimpleRegionMarket() {
-		super();
-		
-		locationSignHelper = new LocationSignHelper();
-		worldHelper = new WorldHelper();
-		templateManager = new TemplateManager();
-		worldEditManager = new WorldEditManager();
-		worldGuardManager = new WorldGuardManager();
-		vaultHook = new VaultHook();
-		playerManager = new PlayerManager();
-	}
+    public SimpleRegionMarket()
+    {
+        super();
 
-	public static String getCopyright() {
-		return "(c) 2013-2014  theZorro266 and SRM Team"; //NON-NLS
-	}
+        locationSignHelper = new LocationSignHelper();
+        
+        signFactory = new SignFactory(this);
+        regionFactory = new RegionFactory(this);
+        worldHelper = new WorldHelper();
+        
+        worldEditManager = new WorldEditManager();
+        worldGuardManager = new WorldGuardManager();
+        vaultHook = new VaultHook();
+        playerManager = new PlayerManager();
+        
+    }
 
-	@Override
-	public void onDisable() {
-		instance = null;
-	}
+    public static String getCopyright()
+    {
+        return "(c) 2013-2014  HaxtorMoogle"; // NON-NLS
+    }
 
-	@Override
-	public void onLoad() {
-		Utils.TimeMeasurement tm = new Utils.TimeMeasurement();
-		{
-			try {
-				templateManager.load();
-			} catch (TemplateFormatException e) {
-				except(e);
-				return;
-			} catch (IOException e) {
-				except(e);
-				return;
-			}
-		}
-		int templateCount;
-		synchronized (templateManager.getTemplateList()) {
-			templateCount = templateManager.getTemplateList().size();
-		}
-		getLogger().info(
-				MessageFormat.format(LanguageSupport.instance.getString("template.load.report"), templateCount,
-						tm.diff()));
-	}
+    @Override
+    public void onDisable()
+    {
+        instance = null;
+    }
 
-	@Override
-	public void onEnable() {
-	    instance = this;
-		if (!disable) {
-		    locationSignHelper = new LocationSignHelper();
-			// Try to load dependencies
-			try {
-				vaultHook.load();
-				worldGuardManager.load();
-				worldEditManager.load();
-			} catch (NullPointerException e) {
-				except(e);
-			}
-		}
-		onLoad();
-		// Check if the plugin should be disabled because of an exception
-		if (disable) {
-			getPluginLoader().disablePlugin(this);
-			return;
-		}
-		loading = false;
+    @Override
+    public void onLoad()
+    {
+        Utils.TimeMeasurement tm = new Utils.TimeMeasurement();
+        {
+            try
+            {
+                // Needs LanguageSupport,WorldGuardManager,WorldEditManager,
+                // RegionFactory, to be loaded
+                templateManager.load();
+            }
+            catch (TemplateFormatException e)
+            {
+                except(e);
+                return;
+            }
+            catch (IOException e)
+            {
+                except(e);
+                return;
+            }
+        }
+        int templateCount;
+        synchronized (templateManager.getTemplateList())
+        {
+            templateCount = templateManager.getTemplateList().size();
+        }
+        getLogger().info(MessageFormat.format(LanguageSupport.instance.getString("template.load.report"), templateCount, tm.diff()));
+    }
 
-		// TODO: permissions = new <insert permissions class with list support here>();
-		if (vaultHook.isVaultEnabled()) {
-			economy = new VaultEconomy();
-			if (permissions == null) {
-				permissions = new VaultPermissions();
-			}
-		}
-		if (permissions == null) {
-			permissions = new BasicPermissions();
-		}
-		if (economy == null) {
-			economy = new NoEconomy();
-		}
+    @Override
+    public void onEnable()
+    {
+        instance = this;
+        if (!disable)
+        {
+            locationSignHelper = new LocationSignHelper();
+            // Try to load dependencies
+            try
+            {
+                vaultHook.load();
+                worldGuardManager.load();
+                worldEditManager.load();
+            }
+            catch (NullPointerException e)
+            {
+                except(e);
+            }
+        }
+        templateManager = new TemplateManager(this);
+        // Check if the plugin should be disabled because of an exception
+        if (disable)
+        {
+            getPluginLoader().disablePlugin(this);
+            return;
+        }
+        loading = false;
 
-		// Load regions in templates
-		Utils.TimeMeasurement tm = new Utils.TimeMeasurement();
-		{
-			try {
-				templateManager.loadContent();
-			} catch (ContentLoadException e) {
-				except(e);
-			}
-		}
+        // TODO: permissions = new <insert permissions class with list support
+        // here>();
+        if (vaultHook.isVaultEnabled())
+        {
+            economy = new VaultEconomy();
+            if (permissions == null)
+            {
+                permissions = new VaultPermissions();
+            }
+        }
+        if (permissions == null)
+        {
+            permissions = new BasicPermissions();
+        }
+        if (economy == null)
+        {
+            economy = new NoEconomy();
+        }
 
-		getLogger().info(
-			MessageFormat.format(LanguageSupport.instance.getString("region.load.report"),
-					RegionFactory.instance.getRegionCount(), tm.diff()));
-		el = new EventListener(this);
-		// Register events
-		playerManager.registerEvents();
-		//new EventListener();
+        // Load regions in templates
+        Utils.TimeMeasurement tm = new Utils.TimeMeasurement();
 
-		// Set command executor
-		getCommand(SRM_COMMAND).setExecutor(new CommandHandler());
+        try
+        {
+            templateManager.loadContent();
+        }
+        catch (ContentLoadException e)
+        {
+            except(e);
+        }
 
-		// Set up async timer
-		getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
-			@Override
-			public void run() {
-				Utils.TimeMeasurement tm = new Utils.TimeMeasurement();
-				{
-					synchronized (templateManager.getTemplateList()) {
-						for (Template template : templateManager.getTemplateList()) {
-							if (template instanceof TimedTemplate) {
-								((TimedTemplate) template).schedule();
-							}
-						}
-					}
-				}
-				getLogger().log(Level.FINEST,
-						MessageFormat.format(LanguageSupport.instance.getString("schedule.report"), tm.diff()));
-			}
-		}, 1200L, 1200L);
-	}
+        getLogger().info(MessageFormat.format(LanguageSupport.instance.getString("region.load.report"), regionFactory.getRegionCount(), tm.diff()));
+        setEl(new EventListener(this));
+        // Register events
+        playerManager.registerEvents(this);
+        // new EventListener();
 
-	private void except(Throwable t) {
-		disable = true;
-		getLogger().severe(LanguageSupport.instance.getString("plugin.problem.unload"));
-		printError(t);
+        // Set command executor
+        getCommand(SRM_COMMAND).setExecutor(new CommandHandler());
 
-		if (!loading) {
-			getPluginLoader().disablePlugin(this);
-		}
-	}
+        // Set up async timer
+        getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                Utils.TimeMeasurement tm = new Utils.TimeMeasurement();
+                {
+                    synchronized (templateManager.getTemplateList())
+                    {
+                        for (Template template : templateManager.getTemplateList())
+                        {
+                            if (template instanceof TimedTemplate)
+                            {
+                                ((TimedTemplate) template).schedule();
+                            }
+                        }
+                    }
+                }
+                getLogger().log(Level.FINEST, MessageFormat.format(LanguageSupport.instance.getString("schedule.report"), tm.diff()));
+            }
+        }, 1200L, 1200L);
+        onLoad();
+    }
 
-	public void printError(Throwable t) {
-		if (PRINT_STACKTRACE) {
-			t.printStackTrace();
-		} else {
-			getLogger().severe(t.toString());
-			for (StackTraceElement element : t.getStackTrace()) {
-				getLogger().severe("  " + element.toString());
-			}
+    private void except(Throwable t)
+    {
+        disable = true;
+        getLogger().severe(LanguageSupport.instance.getString("plugin.problem.unload"));
+        printError(t);
 
-			Throwable cause = t.getCause();
-			if (cause != null) {
-				getLogger().severe("=== Caused by:"); //NON-NLS
-				printError(cause);
-			}
-		}
-	}
+        if (!loading)
+        {
+            getPluginLoader().disablePlugin(this);
+        }
+    }
+
+    public void printError(Throwable t)
+    {
+        if (PRINT_STACKTRACE)
+        {
+            t.printStackTrace();
+        }
+        else
+        {
+            getLogger().severe(t.toString());
+            for (StackTraceElement element : t.getStackTrace())
+            {
+                getLogger().severe("  " + element.toString());
+            }
+
+            Throwable cause = t.getCause();
+            if (cause != null)
+            {
+                getLogger().severe("=== Caused by:"); // NON-NLS
+                printError(cause);
+            }
+        }
+    }
 
     public static SimpleRegionMarket getInstance()
     {
@@ -219,7 +263,7 @@ public class SimpleRegionMarket extends JavaPlugin {
     public TemplateManager getTemplateManager()
     {
         // TODO Auto-generated method stub
-        return  templateManager;
+        return templateManager;
     }
 
     public WorldGuardManager getWorldGuardManager()
@@ -262,5 +306,29 @@ public class SimpleRegionMarket extends JavaPlugin {
     {
         // TODO Auto-generated method stub
         return economy;
+    }
+    public SignFactory getSignFactory()
+    {
+        return signFactory;
+    }
+
+    public EventListener getEl()
+    {
+        return el;
+    }
+
+    public void setEl(EventListener el)
+    {
+        this.el = el;
+    }
+
+    public RegionFactory getRegionFactory()
+    {
+        return regionFactory;
+    }
+
+    public void setRegionFactory(RegionFactory regionFactory)
+    {
+        this.regionFactory = regionFactory;
     }
 }

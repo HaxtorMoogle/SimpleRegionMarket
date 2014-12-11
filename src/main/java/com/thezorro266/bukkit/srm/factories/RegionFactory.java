@@ -44,133 +44,162 @@ import com.thezorro266.bukkit.srm.helpers.Options;
 import com.thezorro266.bukkit.srm.templates.SignTemplate;
 import com.thezorro266.bukkit.srm.templates.Template;
 
-public class RegionFactory {
-	public static final RegionFactory instance = new RegionFactory();
-	@Getter
-	private int regionCount = 0;
+public class RegionFactory
+{
+    public static RegionFactory instance;
+    @Getter
+    private int regionCount = 0;
 
-	private RegionFactory() {
-	}
+    private SimpleRegionMarket thePlugin;
+    public RegionFactory(SimpleRegionMarket plug)
+    {
+        thePlugin = plug;
+        instance = this;
+    }
 
-	public static ProtectedRegion getProtectedRegionFromLocation(Location loc, String region) {
-		ProtectedRegion protectedRegion = null;
-		final RegionManager worldRegionManager = SimpleRegionMarket.getInstance().getWorldGuardManager()
-				.getWorldGuard().getRegionManager(loc.getWorld());
-		if (region == null) {
-			ApplicableRegionSet regionSet = worldRegionManager.getApplicableRegions(loc.getBukkitLocation());
-			if (regionSet.size() == 1) {
-				protectedRegion = regionSet.iterator().next();
-			} else {
-				System.out.println("More than one region detected at " + loc.toString());
-				// TODO Take child region or region with highest priority
-			}
-		} else {
-			protectedRegion = worldRegionManager.getRegion(region);
-		}
-		return protectedRegion;
-	}
+    public static ProtectedRegion getProtectedRegionFromLocation(Location loc, String region)
+    {
+        ProtectedRegion protectedRegion = null;
+        final RegionManager worldRegionManager = SimpleRegionMarket.getInstance().getWorldGuardManager().getWorldGuard().getRegionManager(loc.getWorld());
+        if (region == null)
+        {
+            ApplicableRegionSet regionSet = worldRegionManager.getApplicableRegions(loc.getBukkitLocation());
+            if (regionSet.size() == 1)
+            {
+                protectedRegion = regionSet.iterator().next();
+            }
+            else
+            {
+                System.out.println("More than one region detected at " + loc.toString());
+                // TODO Take child region or region with highest priority
+            }
+        }
+        else
+        {
+            protectedRegion = worldRegionManager.getRegion(region);
+        }
+        return protectedRegion;
+    }
 
-	public Region createRegion(Template template, World world, ProtectedRegion worldguardRegion) {
-		Region region = new Region(template, world, worldguardRegion);
+    public Region createRegion(Template template, World world, ProtectedRegion worldguardRegion)
+    {
+        Region region = new Region(template, world, worldguardRegion);
 
-		synchronized (template.getRegionList()) {
-			template.getRegionList().add(region);
-		}
-		SimpleRegionMarket.getInstance().getWorldHelper().putRegion(region, world);
+        synchronized (template.getRegionList())
+        {
+            template.getRegionList().add(region);
+        }
+        thePlugin.getWorldHelper().putRegion(region, world);
 
-		++regionCount;
+        ++regionCount;
 
-		return region;
-	}
+        return region;
+    }
 
-	public void destroyRegion(Region region) {
-		{
-			Sign[] signArray = new Sign[region.getSignList().size()];
-			signArray = region.getSignList().toArray(signArray);
-			for (Sign sign : signArray) {
-				sign.clear();
-				SignFactory.instance.destroySign(sign);
-			}
-		}
+    public void destroyRegion(Region region)
+    {
+        {
+            Sign[] signArray = new Sign[region.getSignList().size()];
+            signArray = region.getSignList().toArray(signArray);
+            for (Sign sign : signArray)
+            {
+                sign.clear();
+                thePlugin.getSignFactory().destroySign(sign);
+            }
+        }
 
-		synchronized (region.getTemplate().getRegionList()) {
-			region.getTemplate().getRegionList().remove(region);
-		}
+        synchronized (region.getTemplate().getRegionList())
+        {
+            region.getTemplate().getRegionList().remove(region);
+        }
 
-		--regionCount;
-	}
+        --regionCount;
+    }
 
-	public void loadFromConfiguration(Configuration config, String path) throws ContentLoadException {
-		Template template = SimpleRegionMarket.getInstance().getTemplateManager()
-				.getTemplateFromId(config.getString(path + "template_id"));
-		World world = Bukkit.getWorld(config.getString(path + "world"));
-		ProtectedRegion worldguardRegion = SimpleRegionMarket.getInstance().getWorldGuardManager()
-				.getProtectedRegion(world, config.getString(path + "worldguard_region"));
+    public void loadFromConfiguration(Configuration config, String path) throws ContentLoadException
+    {
+        Template template = thePlugin.getTemplateManager().getTemplateFromId(config.getString(path + "template_id"));
+        World world = Bukkit.getWorld(config.getString(path + "world"));
+        ProtectedRegion worldguardRegion = thePlugin.getWorldGuardManager().getProtectedRegion(world, config.getString(path + "worldguard_region"));
 
-		Region region;
-		try {
-			region = createRegion(template, world, worldguardRegion);
-		} catch (IllegalArgumentException e) {
-			throw new ContentLoadException("Could not create region", e);
-		}
+        Region region;
+        try
+        {
+            region = createRegion(template, world, worldguardRegion);
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw new ContentLoadException("Could not create region", e);
+        }
 
-		// Check if there are options
-		if (config.isSet(path + "options")) {
-			// Set region options from values from options path
-			Set<Entry<String, Object>> optionEntrySet = config.getConfigurationSection(path + "options")
-					.getValues(true).entrySet();
-			for (Entry<String, Object> optionEntry : optionEntrySet) {
-				if (!(optionEntry.getValue() instanceof ConfigurationSection)) {
-					region.getOptions().set(optionEntry.getKey(), optionEntry.getValue());
-				}
-			}
-		}
+        // Check if there are options
+        if (config.isSet(path + "options"))
+        {
+            // Set region options from values from options path
+            Set<Entry<String, Object>> optionEntrySet = config.getConfigurationSection(path + "options").getValues(true).entrySet();
+            for (Entry<String, Object> optionEntry : optionEntrySet)
+            {
+                if (!(optionEntry.getValue() instanceof ConfigurationSection))
+                {
+                    region.getOptions().set(optionEntry.getKey(), optionEntry.getValue());
+                }
+            }
+        }
 
-		ConfigurationSection signSection = config.getConfigurationSection(path + "signs");
-		if (signSection != null) {
-			for (String signKey : signSection.getKeys(false)) {
-				try {
-					SignFactory.instance.loadFromConfiguration(config, region,
-							path + String.format("signs.%s.", signKey));
-				} catch (IllegalArgumentException e) {
-					throw new ContentLoadException("Could not create sign " + signKey, e);
-				}
-			}
-		}
-	}
+        ConfigurationSection signSection = config.getConfigurationSection(path + "signs");
+        if (signSection != null)
+        {
+            for (String signKey : signSection.getKeys(false))
+            {
+                try
+                {
+                    thePlugin.getSignFactory().loadFromConfiguration(config, region, path + String.format("signs.%s.", signKey));
+                }
+                catch (IllegalArgumentException e)
+                {
+                    throw new ContentLoadException("Could not create sign " + signKey, e);
+                }
+            }
+        }
+    }
 
-	public class Region {
-		@Getter
-		final Template template;
-		@Getter
-		final World world;
-		@Getter
-		final ProtectedRegion worldguardRegion;
-		@Getter
-		ArrayList<Sign> signList;
+    public class Region
+    {
+        @Getter
+        final Template template;
+        @Getter
+        final World world;
+        @Getter
+        final ProtectedRegion worldguardRegion;
+        @Getter
+        ArrayList<Sign> signList;
 
-		@Getter
-		private final Options options;
+        @Getter
+        private final Options options;
 
-		private Region(Template template, World world, ProtectedRegion worldguardRegion) {
-			if (template == null) {
-				throw new IllegalArgumentException("Template must not be null");
-			}
-			if (world == null) {
-				throw new IllegalArgumentException("World must not be null");
-			}
-			if (worldguardRegion == null) {
-				throw new IllegalArgumentException("WorldGuard region must not be null");
-			}
+        private Region(Template template, World world, ProtectedRegion worldguardRegion)
+        {
+            if (template == null)
+            {
+                throw new IllegalArgumentException("Template must not be null");
+            }
+            if (world == null)
+            {
+                throw new IllegalArgumentException("World must not be null");
+            }
+            if (worldguardRegion == null)
+            {
+                throw new IllegalArgumentException("WorldGuard region must not be null");
+            }
 
-			this.template = template;
-			this.world = world;
-			this.worldguardRegion = worldguardRegion;
-			signList = new ArrayList<Sign>();
-			options = new Options();
-		}
+            this.template = template;
+            this.world = world;
+            this.worldguardRegion = worldguardRegion;
+            signList = new ArrayList<Sign>();
+            options = new Options();
+        }
 
-		public Template getTemplate()
+        public Template getTemplate()
         {
             // TODO Auto-generated method stub
             return template;
@@ -182,79 +211,83 @@ public class RegionFactory {
             return signList;
         }
 
-        public String getName() {
-			return worldguardRegion.getId();
-		}
+        public String getName()
+        {
+            return worldguardRegion.getId();
+        }
 
-		public Sign addBlockAsSign(Block block) {
-			if (SignFactory.instance.isSign(block)) {
-				org.bukkit.material.Sign signMat = (org.bukkit.material.Sign) block.getState().getData();
-				return SignFactory.instance.createSign(this, Location.fromBlock(block),
-						block.getType().equals(Material.WALL_SIGN), signMat.getFacing());
-			}
-			return null;
-		}
+        public Sign addBlockAsSign(Block block)
+        {
+            if (thePlugin.getSignFactory().isSign(block))
+            {
+                org.bukkit.material.Sign signMat = (org.bukkit.material.Sign) block.getState().getData();
+                return thePlugin.getSignFactory().createSign(this, Location.fromBlock(block), block.getType().equals(Material.WALL_SIGN), signMat.getFacing());
+            }
+            return null;
+        }
 
-		public void updateSigns() {
-			for (Sign sign : signList) {
-				template.updateSign(sign);
-			}
-		}
+        public void updateSigns()
+        {
+            for (Sign sign : signList)
+            {
+                template.updateSign(sign);
+            }
+        }
 
-		public HashMap<String, String> getReplacementMap() {
-			if (!(template instanceof SignTemplate)) {
-				throw new IllegalStateException(String.format("Template '%s' is not a sign template", template.getId())); //NON-NLS
-			}
+        public HashMap<String, String> getReplacementMap()
+        {
+            if (!(template instanceof SignTemplate))
+            {
+                throw new IllegalStateException(String.format("Template '%s' is not a sign template", template.getId())); // NON-NLS
+            }
 
-			HashMap<String, String> replacementMap = new HashMap<String, String>();
-			replacementMap.put("region", getName());
-			replacementMap.put("world", world.getName());
-			if (getWorldguardRegion() instanceof ProtectedCuboidRegion) {
-				replacementMap.put(
-						"x",
-						Integer.toString(Math.abs((int) worldguardRegion.getMaximumPoint().getX()
-								- (int) (worldguardRegion.getMinimumPoint().getX() - 1))));
-				replacementMap.put(
-						"y",
-						Integer.toString(Math.abs((int) worldguardRegion.getMaximumPoint().getY()
-								- (int) (worldguardRegion.getMinimumPoint().getY() - 1))));
-				replacementMap.put(
-						"z",
-						Integer.toString(Math.abs((int) worldguardRegion.getMaximumPoint().getZ()
-								- (int) (worldguardRegion.getMinimumPoint().getZ() - 1))));
-			}
+            HashMap<String, String> replacementMap = new HashMap<String, String>();
+            replacementMap.put("region", getName());
+            replacementMap.put("world", world.getName());
+            if (getWorldguardRegion() instanceof ProtectedCuboidRegion)
+            {
+                replacementMap.put("x", Integer.toString(Math.abs((int) worldguardRegion.getMaximumPoint().getX() - (int) (worldguardRegion.getMinimumPoint().getX() - 1))));
+                replacementMap.put("y", Integer.toString(Math.abs((int) worldguardRegion.getMaximumPoint().getY() - (int) (worldguardRegion.getMinimumPoint().getY() - 1))));
+                replacementMap.put("z", Integer.toString(Math.abs((int) worldguardRegion.getMaximumPoint().getZ() - (int) (worldguardRegion.getMinimumPoint().getZ() - 1))));
+            }
 
-			((SignTemplate) template).replacementMap(this, replacementMap);
+            ((SignTemplate) template).replacementMap(this, replacementMap);
 
-			return replacementMap;
-		}
+            return replacementMap;
+        }
 
-		public void saveToConfiguration(Configuration config, String path) {
-			config.set(path + "template_id", template.getId());
-			config.set(path + "world", world.getName());
-			config.set(path + "worldguard_region", worldguardRegion.getId());
-			saveOptions(config, path + "options.");
+        public void saveToConfiguration(Configuration config, String path)
+        {
+            config.set(path + "template_id", template.getId());
+            config.set(path + "world", world.getName());
+            config.set(path + "worldguard_region", worldguardRegion.getId());
+            saveOptions(config, path + "options.");
 
-			int signCount = 0;
-			for (Sign sign : signList) {
-				sign.saveToConfiguration(config, String.format("signs.%d.", signCount));
-				++signCount;
-			}
-		}
+            int signCount = 0;
+            for (Sign sign : signList)
+            {
+                sign.saveToConfiguration(config, String.format("signs.%d.", signCount));
+                ++signCount;
+            }
+        }
 
-		private void saveOptions(Configuration config, String path) {
-			synchronized (options) {
-				for (Entry<String, Object> optionEntry : options) {
-					config.set(path + optionEntry.getKey(), optionEntry.getValue());
-				}
-			}
-		}
+        private void saveOptions(Configuration config, String path)
+        {
+            synchronized (options)
+            {
+                for (Entry<String, Object> optionEntry : options)
+                {
+                    config.set(path + optionEntry.getKey(), optionEntry.getValue());
+                }
+            }
+        }
 
-		@SuppressWarnings("HardCodedStringLiteral")
-		@Override
-		public String toString() {
-			return String.format("Region[%s,w:%s,t:%s]", getName(), world.getName(), template.toString());
-		}
+        @SuppressWarnings("HardCodedStringLiteral")
+        @Override
+        public String toString()
+        {
+            return String.format("Region[%s,w:%s,t:%s]", getName(), world.getName(), template.toString());
+        }
 
         public World getWorld()
         {
@@ -273,7 +306,7 @@ public class RegionFactory {
             // TODO Auto-generated method stub
             return options;
         }
-	}
+    }
 
     public int getRegionCount()
     {

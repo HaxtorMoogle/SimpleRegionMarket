@@ -38,18 +38,21 @@ import com.thezorro266.bukkit.srm.helpers.Options;
 
 public class SignFactory
 {
-    public static final SignFactory instance = new SignFactory();
+    public static SignFactory instance;
     @Getter
     private int signCount = 0;
 
-    public SignFactory()
+    private SimpleRegionMarket thePlugin;
+    public SignFactory(SimpleRegionMarket plug)
     {
+        thePlugin = plug;
+        instance = this;
     }
 
     public Sign createSign(Region region, Location location, boolean isWallSign, BlockFace direction)
     {
         // Check for sign on location
-        Sign oldSign = SimpleRegionMarket.getInstance().getLocationSignHelper().getSign(location);
+        Sign oldSign = thePlugin.getLocationSignHelper().getSign(location);
         if (oldSign != null)
         {
             throw new IllegalArgumentException("Location already has a sign");
@@ -59,7 +62,7 @@ public class SignFactory
         Sign sign = new Sign(region, location, isWallSign, direction);
 
         region.getSignList().add(sign);
-        SimpleRegionMarket.getInstance().getLocationSignHelper().addSignAndLocation(sign);
+        thePlugin.getLocationSignHelper().addSignAndLocation(sign);
 
         ++signCount;
 
@@ -69,7 +72,7 @@ public class SignFactory
     public void destroySign(Sign sign)
     {
         sign.getRegion().getSignList().remove(sign);
-        SimpleRegionMarket.getInstance().getLocationSignHelper().removeSignAndLocation(sign);
+        thePlugin.getLocationSignHelper().removeSignAndLocation(sign);
 
         --signCount;
     }
@@ -89,7 +92,7 @@ public class SignFactory
     public Sign getSignFromLocation(Location location)
     {
         
-        return SimpleRegionMarket.getInstance().getLocationSignHelper().getSign(location);
+        return thePlugin.getLocationSignHelper().getSign(location);
     }
  
 
